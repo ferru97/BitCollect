@@ -7,7 +7,7 @@ contract Campaign{
     using Library for Library.Reward;
     using Library for Library.Donation;
 
-    enum State {PENDING, RUNNING, ENDED}
+    enum State {PENDING, RUNNING, EXPIRED, DEACTIVATED}
     State public state;
 
     string campaign_name;
@@ -25,6 +25,7 @@ contract Campaign{
 
     event campainStatus(State s);
     event donationSuccess();
+    event withdrawSuccess(address beneficiary, uint amount);
 
     modifier isOrganizer(address expected) {
         bool is_organizer = false;
@@ -33,7 +34,17 @@ contract Campaign{
                 is_organizer = true;
         }
 
-        require(is_organizer, "Error: only organizers can start the campain");
+        require(is_organizer, "Error: function reserved to organizers");
+        _;
+    }
+
+    modifier isBeneficiary(address b){
+        require(beneficiaries_map[b].flag==true, "Error: only beneficiaries can access the withdraw");
+        _;
+    }
+
+    modifier requireState(State s){
+        require(s==state, "Error: cannot access this functionality from the current state");
         _;
     }
 
@@ -49,7 +60,7 @@ contract Campaign{
     }
 
     modifier campaignNotEnded(uint current_timestamp) {
-        require(current_timestamp < campaign_end_timestamp, "Error: campaign expired");
+        require(current_timestamp < campaign_end_timestamp, "Error: campaign deadline expired");
         _;
     }
 
@@ -75,9 +86,7 @@ contract Campaign{
     }
 
     function startCampaign(address[] calldata to, uint[] calldata wei_partition) campaignNotEnded(block.timestamp) external payable
-                                         isOrganizer(msg.sender) beneficiariesExist(to){//RQ-PARAMS
-        require(state==State.PENDING, "Error: The campaign is already started or is ended");
-
+                                         isOrganizer(msg.sender) beneficiariesExist(to) requireState(State.PENDING){//RQ-PARAMS
         makeDonation(to, wei_partition);
 
         if(organizers_donation[msg.sender] == false)
@@ -127,17 +136,44 @@ contract Campaign{
     }
 
 
+    function beneficiaryWithdraw() external isBeneficiary(msg.sender) requireState(State.EXPIRED){
+        require(state==State.EXPIRED, "Error: the campaign is not ended");
+        require(beneficiaries_map[msg.sender].amount > 0, "Error: there have been no donations for this beneficiary");
+
+        uint amount = beneficiaries_map[msg.sender].amount;
+        beneficiaries_map[msg.sender].amount = 0;
+        (bool success, ) = msg.sender.call.value(amount)("");
+
+        require(success==true, "Error: Withdraw transaction error");
+
+        emit withdrawSuccess(msg.sender,amount);
+
+    }
+
 
     function endCampaign() public isOrganizer(msg.sender) {
-        require(state!=State.ENDED, "Error: The campaign already ended");
-        state = State.ENDED;
+        require(state==State.RUNNING, "Error: The campaign is not running or is already ended");
+        state = State.EXPIRED;
         
+        emit campainStatus(state);
+    }
+
+
+    function deactivateCampaign() public isOrganizer(msg.sender) {
+        require(state==State.EXPIRED, "Error: The campaign is already ended or is deaactivated");
+        require(address(this).balance==0, "Error: Wait until all beneficiaries withdraw their reward");
+        state = State.DEACTIVATED;
+
         emit campainStatus(state);
     }
 
 
     function getBeneficiaries() public view returns(address payable[] memory){
         return beneficiaries;
+    }
+
+    function getDeadline() public view returns(uint){
+        return campaign_end_timestamp;
     }
 
     function getBeneficiariesRewards(address[] memory _ben) public view beneficiariesExist(_ben) returns(uint[] memory){

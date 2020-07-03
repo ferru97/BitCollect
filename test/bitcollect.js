@@ -2,7 +2,7 @@ const BitCollect = artifacts.require("BitCollect");
 const Campaign = artifacts.require("Campaign");
 const truffleAssert = require('truffle-assertions');
 
-var State = {"PENDING":0, "RUNNING":1, "ENDED":2}
+var State = {"PENDING":0, "RUNNING":1, "EXPIRED":2, "DEACTIVATED":3}
 
 contract("BitCollect Test", async accounts => {
     var campaign_instance = null
@@ -45,7 +45,7 @@ contract("BitCollect Test", async accounts => {
 
         //End the campaign
         let end_campaign = await campaign_instance.endCampaign({from: organizer_1})
-        truffleAssert.eventEmitted(end_campaign, 'campainStatus', (ev) => {return ev.s == State["ENDED"]})
+        truffleAssert.eventEmitted(end_campaign, 'campainStatus', (ev) => {return ev.s == State["EXPIRED"]})
 
         //Check the beneficiarirs rewards
         let beneficiaries = await campaign_instance.getBeneficiaries()
@@ -55,6 +55,17 @@ contract("BitCollect Test", async accounts => {
 
         assert.equal(reward_ben1, 9000, "incorrect beneficiarie 1 reward");
         assert.equal(reward_ben2, 6000, "incorrect beneficiarie 2 reward");
+
+        //Beneficiaries withdraw
+        let withdraw_b1 = await campaign_instance.beneficiaryWithdraw({from: beneficiarir_1})
+        truffleAssert.eventEmitted(withdraw_b1, 'withdrawSuccess', (ev) => {return ev.beneficiary==beneficiarir_1 && ev.amount==9000})
+        
+        let withdraw_b2 = await campaign_instance.beneficiaryWithdraw({from: beneficiarir_2})
+        truffleAssert.eventEmitted(withdraw_b2, 'withdrawSuccess', (ev) => {return ev.beneficiary==beneficiarir_2 && ev.amount==6000})
+
+        //Deactivate campaign
+        let deactivate = await campaign_instance.deactivateCampaign({from: organizer_1})
+        truffleAssert.eventEmitted(deactivate, 'campainStatus', (ev) => {return ev.s == State["DEACTIVATED"]})
     });
   
 
