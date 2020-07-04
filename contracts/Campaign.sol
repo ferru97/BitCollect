@@ -1,4 +1,5 @@
 pragma solidity >=0.4.21 <0.7.0;
+pragma experimental ABIEncoderV2;
 
 import "./Library.sol";
 
@@ -6,6 +7,7 @@ contract Campaign{
 
     using Library for Library.Reward;
     using Library for Library.Donation;
+    using Library for Library.DonationReward;
 
     enum State {PENDING, RUNNING, EXPIRED, DEACTIVATED}
     State public state;
@@ -20,11 +22,16 @@ contract Campaign{
 
     address[] donors;
     mapping(address => Library.Donation[]) private donations;
+    mapping(address => Library.DonationReward[]) private donations_rewards;
+
+    string[] donation_rewards;
+    uint[] rewards_prices;
 
     uint campaign_end_timestamp;
 
     event campainStatus(State s);
     event donationSuccess();
+    event donationRewardUnlocked();
     event withdrawSuccess(address beneficiary, uint amount);
 
     modifier isOrganizer(address expected) {
@@ -64,7 +71,9 @@ contract Campaign{
         _;
     }
 
-    constructor(address[] memory _organizers, address payable[] memory _beneficiaries, uint _end_date, string memory name) public {
+    constructor(address[] memory _organizers, address payable[] memory _beneficiaries, uint _end_date, string memory name, 
+    string[] memory rewards_names, uint[] memory rewards_costs) public {
+
         uint l = _organizers.length;
         for(uint i = 0; i < l; i++) {
             organizers.push(_organizers[i]);
@@ -82,12 +91,17 @@ contract Campaign{
 
         campaign_name = name;
         state = State.PENDING;
+
+        donation_rewards = rewards_names;
+        rewards_prices = rewards_costs;
+
         emit campainStatus(state);
     }
 
-    function startCampaign(address[] calldata to, uint[] calldata wei_partition) campaignNotEnded(block.timestamp) external payable
-                                         isOrganizer(msg.sender) beneficiariesExist(to) requireState(State.PENDING){//RQ-PARAMS
-        makeDonation(to, wei_partition);
+    function startCampaign(address[] calldata to, uint[] calldata wei_partition, string calldata contact_email)
+     campaignNotEnded(block.timestamp) external payable isOrganizer(msg.sender) beneficiariesExist(to) requireState(State.PENDING){//RQ-PARAMS
+        
+        makeDonation(to, wei_partition, contact_email);
 
         if(organizers_donation[msg.sender] == false)
             organizers_donation[msg.sender] = true;
@@ -109,8 +123,9 @@ contract Campaign{
     }
 
 
-    function makeDonation(address[] memory to, uint[] memory wei_partition)public payable campaignNotEnded(block.timestamp)
-                        beneficiariesExist(to){
+    function makeDonation(address[] memory to, uint[] memory wei_partition, string memory contact_email)public payable
+     campaignNotEnded(block.timestamp)beneficiariesExist(to){
+         
         require(state==State.RUNNING || (state==State.PENDING && organizers_donation[msg.sender]==false),
                 "Error: The campaign is not started or you're not an organizer to start it");
         require(msg.value>0, "Error: 0 wei provided");
@@ -122,13 +137,30 @@ contract Campaign{
         }
         require(msg.value==total_donation,"Error: Total povided weis are different from the provided weis partitions");
         
+
         Library.Donation memory d;
+
         d.amount = msg.value;
         d.donation_beneficiaries = to;
         d.danation_partitions = wei_partition;
         donations[msg.sender].push(d);
 
-        total_donation = 0;
+        if(rewards_prices.length>0 && msg.value>=rewards_prices[0]){
+            Library.DonationReward memory reward;
+            uint i = 0;
+            while(i<donation_rewards.length && msg.value>=rewards_prices[i]){
+                i++;
+            }
+
+            reward.max_reward_index = i - 1;
+            reward.donation_index = donations[msg.sender].length - 1;
+            reward.email_contact = contact_email;
+
+            donations_rewards[msg.sender].push(reward);
+
+            emit donationRewardUnlocked();
+        }
+
         for(uint i = 0; i<to.length; i++)
             beneficiaries_map[to[i]].amount += wei_partition[i];
 
@@ -137,7 +169,6 @@ contract Campaign{
 
 
     function beneficiaryWithdraw() external isBeneficiary(msg.sender) requireState(State.EXPIRED){
-        require(state==State.EXPIRED, "Error: the campaign is not ended");
         require(beneficiaries_map[msg.sender].amount > 0, "Error: there have been no donations for this beneficiary");
 
         uint amount = beneficiaries_map[msg.sender].amount;
@@ -151,16 +182,13 @@ contract Campaign{
     }
 
 
-    function endCampaign() public isOrganizer(msg.sender) {
-        require(state==State.RUNNING, "Error: The campaign is not running or is already ended");
+    function endCampaign() public isOrganizer(msg.sender) requireState(State.RUNNING){
         state = State.EXPIRED;
-        
         emit campainStatus(state);
     }
 
 
-    function deactivateCampaign() public isOrganizer(msg.sender) {
-        require(state==State.EXPIRED, "Error: The campaign is already ended or is deaactivated");
+    function deactivateCampaign() public isOrganizer(msg.sender) requireState(State.EXPIRED){
         require(address(this).balance==0, "Error: Wait until all beneficiaries withdraw their reward");
         state = State.DEACTIVATED;
 
@@ -183,6 +211,25 @@ contract Campaign{
         }
 
         return rewards;
+    }
+
+
+    function getDonationReward() external view returns(string memory){
+        string memory rewards = "";
+        string memory delimeter = "@";
+        Library.DonationReward[] memory user_donations_rewards = donations_rewards[msg.sender];
+
+        for(uint i = 0; i<user_donations_rewards.length; i++){
+           for(uint k = 0; k<=user_donations_rewards[i].max_reward_index; k++){
+                rewards = strConcat(rewards, delimeter, donation_rewards[k]);
+           }
+        }
+
+        return rewards;
+    }
+
+    function strConcat(string memory a, string memory b, string memory c) internal pure returns (string memory) {
+        return string(abi.encodePacked(a, b, c));
     }
 
 
