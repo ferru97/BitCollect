@@ -6,7 +6,7 @@ var State = {"PENDING":0, "RUNNING":1, "EXPIRED":2, "DEACTIVATED":3}
 
 contract("BitCollect Test", async accounts => {
     var campaign_instance = null
-    var start_date = 1593766008
+    var start_date = 1595699440
 
     organizer_1 = accounts[1]
     organizer_2 = accounts[2]
@@ -14,12 +14,12 @@ contract("BitCollect Test", async accounts => {
     beneficiarir_1 = accounts[3]
     beneficiarir_2 = accounts[4]
 
-    it("Should start campaign after oranizers donation", async () => {
+    it("Simple campaing", async () => {
         let instance = await BitCollect.deployed()
         var new_contract_addr = null;
 
         //Create and start campaign
-        let new_contract = await instance.createCampaign([organizer_1, organizer_2],[beneficiarir_1, beneficiarir_2], start_date,"Test Campaign 1" )   
+        let new_contract = await instance.createCampaign([organizer_1, organizer_2],[beneficiarir_1, beneficiarir_2], start_date,"Test Campaign 1",[],[])   
         truffleAssert.eventEmitted(new_contract, 'campaignCreated', (ev) => {
             if (ev.cont!=undefined && ev.cont.substr(0,2)=="0x"){
                 new_contract_addr = ev.cont
@@ -30,17 +30,17 @@ contract("BitCollect Test", async accounts => {
 
         campaign_instance = await Campaign.at(new_contract_addr);
 
-        let org1_don = await campaign_instance.startCampaign([beneficiarir_1,beneficiarir_2],[1000,2000], {from: organizer_1, value:3000})
+        let org1_don = await campaign_instance.startCampaign([beneficiarir_1,beneficiarir_2],[1000,2000], "", {from: organizer_1, value:3000})
         truffleAssert.eventEmitted(org1_don, 'campainStatus', (ev) => {return ev.s == State["PENDING"]})
 
-        let org2_don = await campaign_instance.startCampaign([beneficiarir_1],[2000], {from: organizer_2, value:2000})
+        let org2_don = await campaign_instance.startCampaign([beneficiarir_1],[2000], "", {from: organizer_2, value:2000})
         truffleAssert.eventEmitted(org2_don, 'campainStatus', (ev) => {return ev.s == State["RUNNING"]})
 
         //Make a couple of donations
-        let donation_1 = await campaign_instance.makeDonation([beneficiarir_1,beneficiarir_2],[3000,4000], {from: accounts[5], value:7000})
+        let donation_1 = await campaign_instance.makeDonation([beneficiarir_1,beneficiarir_2],[3000,4000], "", {from: accounts[5], value:7000})
         truffleAssert.eventEmitted(donation_1, 'donationSuccess')
 
-        let donation_2 = await campaign_instance.makeDonation([beneficiarir_1],[3000], {from: accounts[6], value:3000})
+        let donation_2 = await campaign_instance.makeDonation([beneficiarir_1],[3000], "", {from: accounts[6], value:3000})
         truffleAssert.eventEmitted(donation_2, 'donationSuccess')
 
         //End the campaign
