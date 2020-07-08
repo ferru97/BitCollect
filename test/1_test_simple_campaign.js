@@ -19,7 +19,7 @@ contract("BitCollect Test", async accounts => {
         var new_contract_addr = null;
 
         //Create and start campaign
-        let new_contract = await instance.createCampaign([organizer_1, organizer_2],[beneficiarir_1, beneficiarir_2], start_date,"Test Campaign 1",[],[])   
+        let new_contract = await instance.createCampaign([organizer_1, organizer_2],[beneficiarir_1, beneficiarir_2], start_date,"Test Campaign 1", [], [], "", "")   
         truffleAssert.eventEmitted(new_contract, 'campaignCreated', (ev) => {
             if (ev.cont!=undefined && ev.cont.substr(0,2)=="0x"){
                 new_contract_addr = ev.cont

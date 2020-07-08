@@ -15,6 +15,8 @@ contract Campaign{
     State public state;
 
     string campaign_name;
+    string campaign_images;
+    string campaign_images_hash;
 
     address[] public organizers;
     mapping(address => bool) private organizers_donation;
@@ -81,8 +83,8 @@ contract Campaign{
         _;
     }
 
-    constructor(address[] memory _organizers, address payable[] memory _beneficiaries, uint _end_date, string memory name, 
-    string[] memory rewards_names, uint[] memory rewards_costs, uint fraudThreshold) public {
+    constructor(address[] memory _organizers, address payable[] memory _beneficiaries, uint _end_date, string memory name,
+    string[] memory rewards_names, uint[] memory rewards_costs, uint fraudThreshold, string memory imgages_urls, string memory images_hash) public {
 
         uint l = _organizers.length;
         for(uint i = 0; i < l; i++) {
@@ -109,6 +111,8 @@ contract Campaign{
         fraud_report_amount = 0;
         initial_donation_amount = 0;
 
+        campaign_images = imgages_urls;
+        campaign_images_hash = images_hash;
         emit campainStatus(state);
     }
 
