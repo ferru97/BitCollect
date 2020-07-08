@@ -8,14 +8,17 @@ contract Campaign{
     using Library for Library.Reward;
     using Library for Library.Donation;
     using Library for Library.DonationReward;
+    using Library for Library.FraudReporter;
 
-    enum State {PENDING, RUNNING, EXPIRED, DEACTIVATED}
+
+    enum State {PENDING, RUNNING, EXPIRED, DEACTIVATED, BLOCKED}
     State public state;
 
     string campaign_name;
 
     address[] public organizers;
     mapping(address => bool) private organizers_donation;
+    uint initial_donation_amount;
 
     address payable[] public beneficiaries;
     mapping(address => Library.Reward) public beneficiaries_map;
@@ -27,12 +30,19 @@ contract Campaign{
     string[] donation_rewards;
     uint[] rewards_prices;
 
+    uint thresholdFraud;
+    uint fraud_report_amount;
+    address[] fraud_reporters;
+    mapping(address => uint) reports_investments;
+
     uint campaign_end_timestamp;
 
     event campainStatus(State s);
     event donationSuccess();
     event donationRewardUnlocked();
     event withdrawSuccess(address beneficiary, uint amount);
+    event refoundEmitted(uint amount, uint plus);
+    event fraudReported(State s);
 
     modifier isOrganizer(address expected) {
         bool is_organizer = false;
@@ -72,7 +82,7 @@ contract Campaign{
     }
 
     constructor(address[] memory _organizers, address payable[] memory _beneficiaries, uint _end_date, string memory name, 
-    string[] memory rewards_names, uint[] memory rewards_costs) public {
+    string[] memory rewards_names, uint[] memory rewards_costs, uint fraudThreshold) public {
 
         uint l = _organizers.length;
         for(uint i = 0; i < l; i++) {
@@ -95,6 +105,10 @@ contract Campaign{
         donation_rewards = rewards_names;
         rewards_prices = rewards_costs;
 
+        thresholdFraud = fraudThreshold;
+        fraud_report_amount = 0;
+        initial_donation_amount = 0;
+
         emit campainStatus(state);
     }
 
@@ -112,14 +126,14 @@ contract Campaign{
                 organizers_donors++;
         }
 
-        if(organizers_donors==organizers.length){
+        initial_donation_amount += msg.value;
+
+        if(organizers_donors==organizers.length)
             state = State.RUNNING;
-            emit campainStatus(state);
-        }
-        else{
+        else
             state = State.PENDING;
-            emit campainStatus(state);
-        }
+
+        emit campainStatus(state);
     }
 
 
@@ -145,6 +159,7 @@ contract Campaign{
         d.danation_partitions = wei_partition;
         donations[msg.sender].push(d);
 
+        //Check for rewards
         if(rewards_prices.length>0 && msg.value>=rewards_prices[0]){
             Library.DonationReward memory reward;
             uint i = 0;
@@ -184,6 +199,14 @@ contract Campaign{
 
     function endCampaign() public isOrganizer(msg.sender) requireState(State.RUNNING){
         state = State.EXPIRED;
+
+        //Subdivide ether from reporter to all beneficiaries
+        if (fraud_report_amount > 0){
+            uint plus = uint(fraud_report_amount/beneficiaries.length);
+            for(uint i = 0; i<beneficiaries.length; i++)
+                beneficiaries_map[beneficiaries[i]].amount += plus;
+        }
+
         emit campainStatus(state);
     }
 
@@ -206,9 +229,8 @@ contract Campaign{
 
     function getBeneficiariesRewards(address[] memory _ben) public view beneficiariesExist(_ben) returns(uint[] memory){
         uint[] memory rewards = new uint[](_ben.length);
-        for(uint i = 0; i<_ben.length; i++){
+        for(uint i = 0; i<_ben.length; i++)
             rewards[i] = beneficiaries_map[_ben[i]].amount;
-        }
 
         return rewards;
     }
@@ -226,6 +248,54 @@ contract Campaign{
         }
 
         return rewards;
+    }
+
+    function reportFraud() external payable requireState(State.RUNNING){
+        require(reports_investments[msg.sender]==0, "Error: You have already reported this campaign");
+        require(msg.value>0, "Error: You need to invest some ether to report a fraud");
+
+        reports_investments[msg.sender] = msg.value;
+        fraud_reporters.push(msg.sender);
+
+        fraud_report_amount += msg.value;
+
+        if(fraud_reporters.length >= thresholdFraud)
+            state = State.BLOCKED;
+
+        emit fraudReported(state);
+    }
+
+
+    function fraudWithdraw() external payable requireState(State.BLOCKED){
+        uint index;
+        if (organizers_donation[msg.sender]==true) //If organizer do not consider the firt donation sice it is the inital
+            index = 1;
+        else
+            index = 0;
+
+        require(donations[msg.sender].length>index || reports_investments[msg.sender]>0,
+        "You have not made donations/report or you have already withdrawn");
+
+        uint amount = 0;
+        Library.Donation[] memory user_donation = donations[msg.sender];
+        while(index < user_donation.length){
+            amount += user_donation[index].amount;
+            index++;
+        }
+
+        delete donations[msg.sender]; //remove all donation before refounding to avoid reentrancy
+
+        uint plus = 0;
+        if(reports_investments[msg.sender]>0){//If the sender is a reporter
+            plus = uint(initial_donation_amount/fraud_reporters.length);
+            reports_investments[msg.sender] = 0;  //remove reporter investment to avoid reentrancy
+        }
+
+        (bool success, ) = msg.sender.call.value(amount+plus)("");
+        require(success==true, "Error: Fraud refound transaction error");
+
+        emit refoundEmitted(amount, plus);
+
     }
 
     function strConcat(string memory a, string memory b, string memory c) internal pure returns (string memory) {

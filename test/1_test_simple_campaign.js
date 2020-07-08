@@ -2,7 +2,7 @@ const BitCollect = artifacts.require("BitCollect");
 const Campaign = artifacts.require("Campaign");
 const truffleAssert = require('truffle-assertions');
 
-var State = {"PENDING":0, "RUNNING":1, "EXPIRED":2, "DEACTIVATED":3}
+var State = {"PENDING":0, "RUNNING":1, "EXPIRED":2, "DEACTIVATED":3, "BLOCKED":4}
 
 contract("BitCollect Test", async accounts => {
     var campaign_instance = null

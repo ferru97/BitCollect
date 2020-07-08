@@ -21,4 +21,9 @@ library Library{
         bool flag;
     }
 
+    struct FraudReporter{
+        address reporter;
+        bool flag;
+    }
+
 }
