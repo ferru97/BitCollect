@@ -15,13 +15,15 @@ contract Campaign{
     State public state;
 
     string campaign_name;
-    string campaign_images;
-    string campaign_images_hash;
+    string description;
+    string campaign_image;
+    string campaign_image_hash;
 
     address[] public organizers;
     mapping(address => bool) private organizers_donation;
     uint initial_donation_amount;
 
+    string beneficiaries_names;
     address payable[] public beneficiaries;
     mapping(address => Library.Reward) public beneficiaries_map;
 
@@ -83,8 +85,8 @@ contract Campaign{
         _;
     }
 
-    constructor(address[] memory _organizers, address payable[] memory _beneficiaries, uint _end_date, string memory name,
-    string[] memory rewards_names, uint[] memory rewards_costs, uint fraudThreshold, string memory imgages_urls, string memory images_hash) public {
+    constructor(address[] memory _organizers, address payable[] memory _beneficiaries, string memory _beneficiaries_names, uint _end_date,
+    string memory name, string memory _description, string[] memory rewards_names, uint[] memory rewards_costs, uint fraudThreshold, string memory imgage_url, string memory image_hash) public {
 
         uint l = _organizers.length;
         for(uint i = 0; i < l; i++) {
@@ -99,9 +101,12 @@ contract Campaign{
             beneficiaries_map[_beneficiaries[i]].flag = true;
         }
 
+        beneficiaries_names = _beneficiaries_names;
         campaign_end_timestamp = _end_date;
 
+
         campaign_name = name;
+        description =_description;
         state = State.PENDING;
 
         donation_rewards = rewards_names;
@@ -111,8 +116,8 @@ contract Campaign{
         fraud_report_amount = 0;
         initial_donation_amount = 0;
 
-        campaign_images = imgages_urls;
-        campaign_images_hash = images_hash;
+        campaign_image = imgage_url;
+        campaign_image_hash = image_hash;
         emit campainStatus(state);
     }
 
