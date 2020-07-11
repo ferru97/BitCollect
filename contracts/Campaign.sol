@@ -15,7 +15,7 @@ contract Campaign{
     State public state;
 
     string campaign_name;
-    string description;
+    string campaign_description;
     string campaign_image;
     string campaign_image_hash;
 
@@ -106,7 +106,7 @@ contract Campaign{
 
 
         campaign_name = name;
-        description =_description;
+        campaign_description = _description;
         state = State.PENDING;
 
         donation_rewards = rewards_names;
@@ -122,7 +122,7 @@ contract Campaign{
     }
 
     function startCampaign(address[] calldata to, uint[] calldata wei_partition, string calldata contact_email)
-     campaignNotEnded(block.timestamp) external payable isOrganizer(msg.sender) beneficiariesExist(to) requireState(State.PENDING){//RQ-PARAMS
+     campaignNotEnded(block.timestamp) external payable isOrganizer(msg.sender) beneficiariesExist(to) requireState(State.PENDING){//RQ-PARAMS 
         
         makeDonation(to, wei_partition, contact_email);
 

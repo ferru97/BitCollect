@@ -9,7 +9,6 @@ contract BitCollect{
 
     address[] campaigns;
     mapping(address => uint) campaign_index;
-    mapping(uint => uint) test;
 
     uint fraudThreshold;
 

@@ -21,6 +21,7 @@
 	
 	<!-- Template CSS -->
 	<link href="assets/css/style.css" rel="stylesheet">
+	<link href="assets/css/style2.css" rel="stylesheet">
 
 	<!--Fonts-->
 	<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -73,14 +74,58 @@
 				<div class="content col-md-12 col-sm-12 col-xs-12">
 					<div class="section-block">
 						<div class="funding-meta">
-							<h1>AVAILABLE CAMPAIGNS</h1><br>
-							<table>
+							<h1>NEW CAMPAIGN</h1><br>
+							<table class="table1">
 								<tr>
-									<td style="padding-left: 70px;"><img src="https://bitecoin.it/up/2018/10/eth1.png" style="width: 200px; height: 150px"><p>CAMPAIGN 1</p></td>
-									<td style="padding-left: 70px;"><img src="https://bitecoin.it/up/2018/10/eth1.png" style="width: 200px; height: 150px"><p>CAMPAIGN 1</p></td>
-									<td style="padding-left: 70px;"><img src="https://bitecoin.it/up/2018/10/eth1.png" style="width: 200px; height: 150px;"><p>CAMPAIGN 1</p></td>
+									<td >Name*</td>
+									<td><input type="text" id="name" placeholder="Campaign name"></td>
 								</tr>
-							</table>
+								<tr>
+									<td>Organizers*</td>
+									<td>
+										<p style="display: inline;" id="org_list"></p>
+										<input type="text" id="org" placeholder="Organizer address"><button onclick="addOrganizer()">ADD</button>
+									</td>
+								</tr>
+								<tr>
+									<td>Beneficiaries*</td>
+									<td>
+										<p style="display: inline;" id="ben_list"></p>
+										<input type="text" id="ben_name" placeholder="Beneficiary name"> 
+										<input type="text" id="ben" placeholder="Beneficiary address">
+										<button onclick="addBeneficiary()">ADD</button>
+									</td>
+								</tr>
+								<tr>
+									<td>Description</td>
+									<td><input type="text" id="desc"></td>
+								</tr>
+								<tr>
+									<td>Image</td>
+									<td>
+										<input type="text" placeholder="Ex www.a.com/img.jpg" accept="image/x-png,image/jpeg" id="im1"> <input type="text" placeholder="Image md5 hash" id="img_hash1">
+									<br> 
+								</tr>
+								<tr>
+									<td>End Date*</td>
+									<td><input type="date" id="date"></td>
+								</tr>
+								<tr>
+									<tr>
+										<td>Donation rewards</td>
+										<td>
+											<p style="display: inline;" id="rew_list"></p>
+											<input type="text" id="rew" placeholder="Reward name">
+											<input type="number" placeholder="ETH price" id="rew_price" min="0">
+											<button onclick="addReward()">ADD</button>
+										</td>
+									</tr>
+								</tr>
+						
+							</table><br>
+							<div style="padding-left: 15px; font-size: 15pt;"> 
+								<button onclick="createCampaign()">SUBMIT</button><button style="margin-left: 15px;" onclick="location.reload()">RESET</button>
+							</div>
 					</div>
 		
 					
