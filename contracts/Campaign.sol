@@ -26,7 +26,7 @@ contract Campaign{
 
     uint[] public rewards_prices;
 
-    uint thresholdFraud;
+    uint public thresholdFraud;
     uint fraud_report_amount;
     address[] fraud_reporters;
     mapping(address => uint) reports_investments;
@@ -276,7 +276,15 @@ contract Campaign{
     }
 
 
-    function getBeneficiaries() public view returns(address payable[] memory){return beneficiaries;}
+    function getAllBeneficiaries() public view returns(address payable[] memory){return beneficiaries;}
+
+    function getAllOrganizers() public view returns(address[] memory){return organizers;}
+
+    function getAllRewardsPrices() public view returns(uint[] memory){return rewards_prices;}
+
+    function getReportsNumber() public view returns(uint){return fraud_reporters.length;}
+
+    function getBeneficiaryReward(address b)public view returns(uint){return beneficiaries_map[b].amount;}
 
 
 }

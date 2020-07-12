@@ -83,9 +83,24 @@ App = {
 
     getCampaignInfo: function(address, callback){
         App.contracts["Campaign"].at(address).then(async(instance) =>{
+            var beneficiaries = await instance.getAllBeneficiaries()
+            var beneficiaries_rewards = []
+            for(var i=0; i<beneficiaries.length; i++)
+                beneficiaries_rewards.push(await instance.getBeneficiaryReward(beneficiaries[i]));
+            
             try{
-                const name = await instance.state();
-                callback(name);
+                var info = {
+                    state: await instance.state(),
+                    beneficiaries: beneficiaries,
+                    beneficiaries_rewards: beneficiaries_rewards,
+                    organizers: await instance.getAllOrganizers(),
+                    rewards_prices: await instance.getAllRewardsPrices(),
+                    end_date: await instance.campaign_end_timestamp(),
+                    info_hashes: await instance.info_hashes(),
+                    report_threshold: await instance.thresholdFraud(),
+                    report_number: await instance.getReportsNumber()
+                }
+                callback(info);
             }catch(err){
                 alert("Something went wrong ...")
                 console.log(err)

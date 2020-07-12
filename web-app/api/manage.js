@@ -10,12 +10,23 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 
-app.post('/new-campaign', (req, res) => {
+app.post('/api/new-campaign', (req, res) => {
     var data = JSON.parse(req.body.campaign);
     Mongo.addCampaign(data)
     res.end()   
 
     console.log("New campaign created")
+});
+
+
+app.post('/api/get-campaign', (req, res) => {
+    console.log("Get campaign: "+req.body.address)
+
+    var callback = (result)=>{
+        res.write(JSON.stringify(result));
+        res.end()
+      }
+    Mongo.getCampaign(req.body.address, callback)  
 });
 
 app.listen(3005, () => console.log('Gator app listening on port 3005!'));

@@ -18,7 +18,7 @@ function addOrganizer(){
     }
 
     if(org.length>0 && org_name.length>0){
-        $("#org_list").append(org+": "+org+"<br>")
+        $("#org_list").append(org_name+": "+org+"<br>")
         organizers_list.push(org)
         organizers_names.push(org_name)
     }
@@ -61,7 +61,7 @@ function addReward(){
 function createCampaign(){
     var name = $("#name").val().replace(',','');
     var desc = $("#desc").val().replace(',','');
-    var date = $("#date").val().replace(',','');
+    var date = $("#date").val();
     var image = $("#im1").val().replace(',','');
 
     if(name.length==0 || organizers_list==0 || beneficiaries_list.length==0 || date.length==0){
@@ -69,7 +69,8 @@ function createCampaign(){
         return
     }
 
-    var timestamp_end = Date.parse(date)/1000
+    var timestamp_end = new Date(date)
+    timestamp_end = timestamp_end.getTime()/1000
 
     doc = null;
     doc={
@@ -94,7 +95,7 @@ function campaignCreatedCallback(address){
     $.ajax({
         type: "POST",  
         data: {campaign:JSON.stringify(doc)},
-        url: "http://localhost:3005/new-campaign",
+        url: "http://localhost:3005/api/new-campaign",
         success: function(data){  
             alert("Campaign created successfully. Address: "+address)
             window.location.href = "campaign.html?addr="+address;

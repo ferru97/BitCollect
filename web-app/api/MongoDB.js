@@ -25,6 +25,15 @@ function addCampaign(campaign){
 }
 
 
+async function getCampaign(address, callback){
+
+    var query = {addr: address};
+    var res = await campaigns.findOne(query);
+    callback(res)
+}
+
+
 module.exports = {
     addCampaign: addCampaign,
+    getCampaign: getCampaign
 }
