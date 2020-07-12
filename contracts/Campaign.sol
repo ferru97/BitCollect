@@ -1,5 +1,4 @@
 pragma solidity >=0.4.21 <0.7.0;
-pragma experimental ABIEncoderV2;
 
 import "./Library.sol";
 
@@ -14,16 +13,10 @@ contract Campaign{
     enum State {PENDING, RUNNING, EXPIRED, DEACTIVATED, BLOCKED}
     State public state;
 
-    string campaign_name;
-    string campaign_description;
-    string campaign_image;
-    string campaign_image_hash;
-
     address[] public organizers;
     mapping(address => bool) private organizers_donation;
     uint initial_donation_amount;
 
-    string beneficiaries_names;
     address payable[] public beneficiaries;
     mapping(address => Library.Reward) public beneficiaries_map;
 
@@ -31,15 +24,15 @@ contract Campaign{
     mapping(address => Library.Donation[]) private donations;
     mapping(address => Library.DonationReward[]) private donations_rewards;
 
-    string[] donation_rewards;
-    uint[] rewards_prices;
+    uint[] public rewards_prices;
 
     uint thresholdFraud;
     uint fraud_report_amount;
     address[] fraud_reporters;
     mapping(address => uint) reports_investments;
 
-    uint campaign_end_timestamp;
+    uint public campaign_end_timestamp;
+    string public info_hashes;
 
     event campainStatus(State s);
     event donationSuccess();
@@ -85,44 +78,33 @@ contract Campaign{
         _;
     }
 
-    constructor(address[] memory _organizers, address payable[] memory _beneficiaries, string memory _beneficiaries_names, uint _end_date,
-    string memory name, string memory _description, string[] memory rewards_names, uint[] memory rewards_costs, uint fraudThreshold, string memory imgage_url, string memory image_hash) public {
+    constructor(address[] memory _organizers, address payable[] memory _beneficiaries, uint _end_date,
+    uint[] memory rewards_costs, uint fraudThreshold, string memory campaign_info_hashes) public {
 
-        uint l = _organizers.length;
-        for(uint i = 0; i < l; i++) {
+        for(uint i = 0; i < _organizers.length; i++) {
             organizers.push(_organizers[i]);
             organizers_donation[_organizers[i]] = false;
-        }
 
-        l = _beneficiaries.length;
-        for(uint i = 0; i < l; i++) {
             beneficiaries.push(_beneficiaries[i]);
             beneficiaries_map[_beneficiaries[i]].amount = 0;
             beneficiaries_map[_beneficiaries[i]].flag = true;
         }
 
-        beneficiaries_names = _beneficiaries_names;
         campaign_end_timestamp = _end_date;
-
-
-        campaign_name = name;
-        campaign_description = _description;
-        state = State.PENDING;
-
-        donation_rewards = rewards_names;
         rewards_prices = rewards_costs;
+        info_hashes = campaign_info_hashes;
+
+        state = State.PENDING;
 
         thresholdFraud = fraudThreshold;
         fraud_report_amount = 0;
         initial_donation_amount = 0;
 
-        campaign_image = imgage_url;
-        campaign_image_hash = image_hash;
         emit campainStatus(state);
     }
 
     function startCampaign(address[] calldata to, uint[] calldata wei_partition, string calldata contact_email)
-     campaignNotEnded(block.timestamp) external payable isOrganizer(msg.sender) beneficiariesExist(to) requireState(State.PENDING){//RQ-PARAMS 
+     campaignNotEnded(block.timestamp) external payable isOrganizer(msg.sender) beneficiariesExist(to) requireState(State.PENDING){//RQ-PARAMS
         
         makeDonation(to, wei_partition, contact_email);
 
@@ -172,9 +154,8 @@ contract Campaign{
         if(rewards_prices.length>0 && msg.value>=rewards_prices[0]){
             Library.DonationReward memory reward;
             uint i = 0;
-            while(i<donation_rewards.length && msg.value>=rewards_prices[i]){
+            while(i<rewards_prices.length && msg.value>=rewards_prices[i])
                 i++;
-            }
 
             reward.max_reward_index = i - 1;
             reward.donation_index = donations[msg.sender].length - 1;
@@ -227,15 +208,6 @@ contract Campaign{
         emit campainStatus(state);
     }
 
-
-    function getBeneficiaries() public view returns(address payable[] memory){
-        return beneficiaries;
-    }
-
-    function getDeadline() public view returns(uint){
-        return campaign_end_timestamp;
-    }
-
     function getBeneficiariesRewards(address[] memory _ben) public view beneficiariesExist(_ben) returns(uint[] memory){
         uint[] memory rewards = new uint[](_ben.length);
         for(uint i = 0; i<_ben.length; i++)
@@ -245,16 +217,12 @@ contract Campaign{
     }
 
 
-    function getDonationReward() external view returns(string memory){
-        string memory rewards = "";
-        string memory delimeter = "@";
+    function getDonationReward() external view returns(uint[] memory){
         Library.DonationReward[] memory user_donations_rewards = donations_rewards[msg.sender];
+        uint[] memory rewards = new uint[](user_donations_rewards.length);
 
-        for(uint i = 0; i<user_donations_rewards.length; i++){
-           for(uint k = 0; k<=user_donations_rewards[i].max_reward_index; k++){
-                rewards = strConcat(rewards, delimeter, donation_rewards[k]);
-           }
-        }
+        for(uint i = 0; i<user_donations_rewards.length; i++)
+            rewards[i] = user_donations_rewards[i].max_reward_index;
 
         return rewards;
     }
@@ -307,9 +275,8 @@ contract Campaign{
 
     }
 
-    function strConcat(string memory a, string memory b, string memory c) internal pure returns (string memory) {
-        return string(abi.encodePacked(a, b, c));
-    }
+
+    function getBeneficiaries() public view returns(address payable[] memory){return beneficiaries;}
 
 
 }

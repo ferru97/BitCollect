@@ -1,5 +1,4 @@
 pragma solidity >=0.4.21 <0.7.0;
-pragma experimental ABIEncoderV2;
 
 import "./Campaign.sol";
 
@@ -21,16 +20,14 @@ contract BitCollect{
         fraudThreshold = threshold;
     }
 
-    function createCampaign(address[] memory _organizers, address payable[] memory _beneficiaries, string memory _beneficiaries_names,
-    uint _end_date, string memory name,string memory description, string[] memory rewards_names, uint[] memory rewards_costs, string memory imgage_urls, string memory image_hash)
+    function createCampaign(address[] memory _organizers, address payable[] memory _beneficiaries, uint _end_date,
+    uint[] memory rewards_costs, string memory campaign_info_hashes)
     public payable{
         require(_organizers.length>0, "Error: Need at least 1 organizer"); //RQ-PARAMS
         require(_beneficiaries.length>0, "Error: Need at least 1 beneficiarie"); //RQ-PARAMS
         require(_end_date>block.timestamp, "Error: the provided campain end date il is earlier than the start date");
-        require(rewards_names.length==rewards_costs.length, "Error: rewards and rewards prices should have the same cardinality");
 
-        Campaign new_campaign = new Campaign(_organizers, _beneficiaries, _beneficiaries_names,_end_date, name, description, rewards_names,
-                                            rewards_costs, fraudThreshold, imgage_urls, image_hash);
+        Campaign new_campaign = new Campaign(_organizers, _beneficiaries, _end_date, rewards_costs, fraudThreshold, campaign_info_hashes);
         campaigns.push(address(new_campaign));
         campaign_index[address(new_campaign)] = campaigns.length-1;
 

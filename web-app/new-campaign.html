@@ -27,11 +27,13 @@
 	<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
 	<!-- DAPP -->
 	<script src="https://unpkg.com/web3@latest/dist/web3.min.js"></script>
-	<script type="text/javascript" src="assets/js/truffle-contract.min.js"></script>
-	<script src="assets/js/dapp.js"></script>
-
+	<script type="text/javascript" src="assets/js/dapp/truffle-contract.min.js"></script>
+	<script src="assets/js/dapp/dapp.js"></script>
+	<script src="assets/js/dapp/create-campaign.js"></script>
+	
 	<script>
 		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -84,6 +86,7 @@
 									<td>Organizers*</td>
 									<td>
 										<p style="display: inline;" id="org_list"></p>
+										<input type="text" id="org_name" placeholder="Organizer name"> 
 										<input type="text" id="org" placeholder="Organizer address"><button onclick="addOrganizer()">ADD</button>
 									</td>
 								</tr>
@@ -103,7 +106,7 @@
 								<tr>
 									<td>Image</td>
 									<td>
-										<input type="text" placeholder="Ex www.a.com/img.jpg" accept="image/x-png,image/jpeg" id="im1"> <input type="text" placeholder="Image md5 hash" id="img_hash1">
+										<input type="text" placeholder="Ex www.a.com/img.jpg" accept="image/x-png,image/jpeg" id="im1">
 									<br> 
 								</tr>
 								<tr>

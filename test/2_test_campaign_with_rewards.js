@@ -19,7 +19,7 @@ contract("BitCollect Test", async accounts => {
         var new_contract_addr = null;
 
         //Create and start campaign
-        let new_contract = await instance.createCampaign([organizer_1, organizer_2],[beneficiarir_1, beneficiarir_2],"", start_date,"Test Campaign 1","", ["reward 1","reward 2"],[4000,6000], "", "")   
+        let new_contract = await instance.createCampaign([organizer_1, organizer_2],[beneficiarir_1, beneficiarir_2], start_date,[4000,6000], "")   
         truffleAssert.eventEmitted(new_contract, 'campaignCreated', (ev) => {
             if (ev.cont!=undefined && ev.cont.substr(0,2)=="0x"){
                 new_contract_addr = ev.cont
@@ -47,11 +47,16 @@ contract("BitCollect Test", async accounts => {
         truffleAssert.eventEmitted(donation_2, 'donationSuccess')
         truffleAssert.eventEmitted(donation_2, 'donationRewardUnlocked')
 
+        let donation_3 = await campaign_instance.makeDonation([beneficiarir_1],[4000], "acc5@test.com", {from: accounts[6], value:4000})
+        truffleAssert.eventEmitted(donation_3, 'donationSuccess')
+        truffleAssert.eventEmitted(donation_3, 'donationRewardUnlocked')
+
         //Check users rewards
         let rewards_don1 = await campaign_instance.getDonationReward({from: accounts[5]})
-        assert.equal(rewards_don1, "@reward 1", "incorrect beneficiarie 1 reward");
+        assert.equal(rewards_don1[0].words[0], 0, "incorrect reward");
         let rewards_don2 = await campaign_instance.getDonationReward({from: accounts[6]})
-        assert.equal(rewards_don2, "@reward 1@reward 2", "incorrect beneficiarie 1 reward");
+        assert.equal(rewards_don2[0].words[0], 1, "incorrect reward");
+        assert.equal(rewards_don2[1].words[0], 0, "incorrect reward");
     });
   
 
