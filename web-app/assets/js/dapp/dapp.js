@@ -98,7 +98,9 @@ App = {
                     end_date: await instance.campaign_end_timestamp(),
                     info_hashes: await instance.info_hashes(),
                     report_threshold: await instance.thresholdFraud(),
-                    report_number: await instance.getReportsNumber()
+                    report_number: await instance.getReportsNumber(),
+                    user_donations:  await instance.getUserDonation({from: App.account}),
+                    user_rewards:  await instance.getUserRewards({from: App.account})
                 }
                 callback(info);
             }catch(err){
@@ -106,5 +108,33 @@ App = {
                 console.log(err)
             }
         });
-    }
+    },
+
+    startCampaign: function(campaign_addr, beneficiaries, partitions, email, val, callback){
+        App.contracts["Campaign"].at(campaign_addr).then(async(instance) =>{
+            try{
+                var tx_donation = await instance.startCampaign(beneficiaries, partitions, email, {from: App.account, value:val});
+                callback(tx_donation);
+            }catch(err){
+                alert("Something went wrong ...")
+                console.log(err)
+            }
+        });
+    },
+
+    makeDonation: function(campaign_addr, beneficiaries, partitions, email, val, callback){
+        App.contracts["Campaign"].at(campaign_addr).then(async(instance) =>{
+            try{
+                var tx_donation = await instance.makeDonation(beneficiaries, partitions, email, {from: App.account, value:val});
+                callback(tx_donation);
+            }catch(err){
+                alert("Something went wrong ...")
+                console.log(err)
+            }
+        });
+    },
 }
+
+window.ethereum.on('accountsChanged', function (accounts) {
+    //App.init()
+  })

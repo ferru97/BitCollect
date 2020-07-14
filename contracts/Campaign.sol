@@ -20,7 +20,7 @@ contract Campaign{
     address payable[] public beneficiaries;
     mapping(address => Library.Reward) public beneficiaries_map;
 
-    address[] donors;
+    address[] public donors;
     mapping(address => Library.Donation[]) private donations;
     mapping(address => Library.DonationReward[]) private donations_rewards;
 
@@ -276,6 +276,7 @@ contract Campaign{
     }
 
 
+    //Dapp get information
     function getAllBeneficiaries() public view returns(address payable[] memory){return beneficiaries;}
 
     function getAllOrganizers() public view returns(address[] memory){return organizers;}
@@ -285,6 +286,26 @@ contract Campaign{
     function getReportsNumber() public view returns(uint){return fraud_reporters.length;}
 
     function getBeneficiaryReward(address b)public view returns(uint){return beneficiaries_map[b].amount;}
+
+    function getUserDonation()public view returns(uint[] memory){
+        Library.Donation[] memory user_donations = donations[msg.sender];
+        uint[] memory donations_amounts = new uint[](user_donations.length);
+
+        for(uint i = 0; i<donations_amounts.length; i++)
+            donations_amounts[i] = user_donations[i].amount;
+        
+        return donations_amounts;
+    }
+
+    function getUserRewards()public view returns(uint[] memory){
+        Library.DonationReward[] memory user_rewards = donations_rewards[msg.sender];
+        uint[] memory rewards = new uint[](user_rewards.length);
+
+        for(uint i = 0; i<rewards.length; i++)
+            rewards[i] = user_rewards[i].max_reward_index;
+        
+        return rewards;
+    }
 
 
 }

@@ -1,6 +1,7 @@
 
 //campaign test 0xF7BDC5fEbff44E2482D0c5D7b89ab1a36B6179EC
 var State = ["PENDING", "RUNNING", "EXPIRED", "DEACTIVATED", "BLOCKED"]
+var state_index = null;
 var campaign_address = null
 var db_data = null;
 var blockchain_data = null;
@@ -37,26 +38,28 @@ function setCampaignInfo(info){
             console.log(data)
             db_data = data
             var total_raised = 0;
-            for(var i=0; i<info.beneficiaries_rewards.length; i++)
-                total_raised += info.beneficiaries_rewards[i].words[0]
+            for(var i=0; i<blockchain_data.beneficiaries_rewards.length; i++)
+                total_raised += parseFloat(Web3.utils.fromWei(blockchain_data.beneficiaries_rewards[i], 'ether'))
+                
 
-            var end_date = new Date(info.end_date.words[0] * 1000);
+            var end_date = new Date(blockchain_data.end_date.toString() * 1000);
             end_date = end_date.getFullYear() + "/" + end_date.getMonth() + "/" + end_date.getDate()
 
-            var state_index = info.state.words[0];
+            state_index = blockchain_data.state.toNumber();
 
-            $("#name").text(data.name);
-            $("#desc").text(data.description);
-            if(data.image_link.length>0)
-                $("#img").attr("src",data.image_link);
-            $("#raised").text(Web3.utils.fromWei(total_raised.toString(), 'ether')+ " ETH")
+            $("#name").text(db_data.name);
+            $("#desc").text(db_data.description);
+            if(db_data.image_link.length>0)
+                $("#img").attr("src",db_data.image_link);
+            $("#raised").text(total_raised+" ETH")
             $("#end_dt").text(end_date)
             $("#state").text(State[state_index])
+            $("#report").text(blockchain_data.report_number.toString()+"/"+blockchain_data.report_threshold.toString())
 
 
             var rewards = ""
             for(var i=0; i<db_data.rewards_name.length; i++){
-                var reward_price = Web3.utils.fromWei(blockchain_data.rewards_prices[i].words[0].toString(), 'ether')
+                var reward_price = Web3.utils.fromWei(blockchain_data.rewards_prices[i].toString(), 'ether')
                 rewards += '<div class="reward-block"><h3>'+reward_price+' ETH</h3><h2>'+db_data.rewards_name[i]+'</h2></div>'
             }
             if(rewards.length==0)
@@ -64,13 +67,41 @@ function setCampaignInfo(info){
             else
                 $("#rew-list").html(rewards)
 
+            if(isOrganizer()){
+                $("#is-org").css("display","inline")
+                $("#don_2").show()
+            }
+                
+
+            if(isOrganizer() && state_index==0){
+                $("#donate_btn").html("START CAMPAIGN")
+                $("#donate_btn").show()
+            }
+            if(state_index==1){
+                $("#donate_btn").html("DONATE")
+                $("#donate_btn").show()
+                $("#rep-btn").show()
+            }
+
             $("#operations").show()
+
+            printUserDonations()
     
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) { 
             alert("Status: " + textStatus); alert("Error: " + errorThrown); 
         }       
     });
+}
+
+function isOrganizer(){
+    var isOrganizer = false;
+    for(var i=0; i<blockchain_data.organizers.length && !isOrganizer; i++){
+        
+        if(blockchain_data.organizers[i].toLowerCase() == App.account)
+            isOrganizer = true
+    }
+    return isOrganizer
 }
 
 
@@ -124,7 +155,8 @@ function beneficiariesInfo(){
     }
 
     for(var i=0; i<blockchain_data.beneficiaries.length; i++){
-        table += "<tr><td>Beneficiary</td><td>"+db_data.bneficiaries_names[i]+"</td><td><button onclick='alert(\""+blockchain_data.beneficiaries[i]+"\")'>ADDRESS</button></td><td>"+blockchain_data.beneficiaries_rewards[0].words[0]+"</td></tr>"
+        var eth_raised = Web3.utils.fromWei(blockchain_data.beneficiaries_rewards[i].toString(), 'ether')
+        table += "<tr><td>Beneficiary</td><td>"+db_data.bneficiaries_names[i]+"</td><td><button onclick='alert(\""+blockchain_data.beneficiaries[i]+"\")'>ADDRESS</button></td><td>"+eth_raised+" ETH</td></tr>"
     }
 
     table += "</table>"
@@ -143,8 +175,11 @@ function createDonation(){
         table += "<tr><td>"+db_data.bneficiaries_names[i]+"</td><td><button onclick='alert(\""+blockchain_data.beneficiaries[i]+"\")'>ADDRESS</button></td><td>"+input+"</td></tr>"
     }
 
-    table += "</table>"
+    table += "</table><table class='table2'><tr><td>E-mail address</td><td><input type='email' id='email'></td></tr></table>"
     $("#donation_table").html(table)
+
+    if(blockchain_data.rewards_prices.length==0)
+        $("#email").hide()
 
 }
 
@@ -159,8 +194,39 @@ function makeDonation(){
         partition.push(wei)
     }
 
-    console.log(beneficiary)
-    console.log(partition)
+    var total_donation = partition.reduce((a, b) => parseInt(a) + parseInt(b), 0)
+    if(total_donation<=0)
+        return;
+    
+    var email = ""
+    if(blockchain_data.rewards_prices.length > 0){
+        email = $("#email").val()
+        var min_rew_price = blockchain_data.rewards_prices[0]
+        if(total_donation >= min_rew_price && email.length==0){
+            alert("You can unlock a reward! Inser an email address in order to be contacted for the reward manadgement")
+            return
+        }
+    }
+    
+
+    if(state_index==0)
+        App.startCampaign(campaign_address, beneficiary, partition, email, total_donation, donationSuccess_callback)
+    if(state_index==1)
+        App.makeDonation(campaign_address, beneficiary, partition, email, total_donation, donationSuccess_callback)
+}
+
+
+
+function donationSuccess_callback(tx){
+    if(tx.logs[0].event == "donationSuccess" || tx.logs[1].event == "donationSuccess"){
+        var msg = "Donation made successfully!"
+        if(tx.logs[0].event == "donationRewardUnlocked")
+            msg += " You have unlocked some rewards!"
+        alert(msg) 
+        location.reload()
+    }
+    else
+        alert("Something went wrong...")
 }
 
 function closeAllOptions(){
@@ -169,4 +235,46 @@ function closeAllOptions(){
     $("#donation").hide()
 }
 
+
+function printUserDonations(){
+
+    if(blockchain_data.user_donations.length>0)
+        $("#no-don").hide()
+    else
+        return
+    
+    var donations = '<strong>Donations</strong> <ul>'
+    for(var i=0; i<blockchain_data.user_donations.length; i++){
+        var amount = Web3.utils.fromWei(blockchain_data.user_donations[i], 'ether')
+        donations += "<li>"+amount+" ETH</li>"
+    }
+    donations += "</ul>"  
+
+    if(blockchain_data.user_rewards.length>0){
+        donations += "<br><br><strong>Rewards</strong> <ul>"
+        var rewards_cardinality = new Array(db_data.rewards_name.length).fill(0);
+
+        for(var i=0; i<blockchain_data.user_rewards.length; i++){
+            var max_rew_index = blockchain_data.user_rewards[i].toNumber()
+
+            for(var k=0; k<=max_rew_index; k++)
+                rewards_cardinality[k]++
+        }
+
+        for(var i=0; i<db_data.rewards_name.length; i++){
+            if(rewards_cardinality[i]>0){
+                donations += "<li>"+rewards_cardinality[i]+"x"+db_data.rewards_name[i]+"</li>"
+            }
+        }
+        donations += "</ul>"  
+    }
+    
+    $("#don-rew_list").html(donations)
+
+}
+
+
+function reportCampaign(){
+    var confirm = confirm("Do you want to report this campaign?");
+}
 
