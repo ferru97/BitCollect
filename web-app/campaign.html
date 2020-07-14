@@ -83,7 +83,11 @@
 							</div><br>
 							<p style="font-size: 13pt;" id="desc">--</p>
 							<h2 id="raised"></h2>							
-							<span class="contribution">raised</span><br><p id="is-org" style="display: none;">You are an organizer of this campaign!</p>
+							<span class="contribution">raised</span><br>
+							<div>
+								<div id="is-org" style="display: none;">You are an organizer of this campaign!</div>
+								<div id="is-ben" style="display: none;">You are a beneficiary of this campaign!</div>
+							</div>
 							
 						</div>
 						<span class="count-down">Campaign status: <strong><p style="display: inline;" id="state"></p></strong></span>
@@ -91,13 +95,20 @@
 						<span class="count-down">Fraud Reports: <strong><p style="display: inline;" id="report"></p></strong></span>
 
 						<br>
-						<center>
 						<div id="operations" style="display: none;">
 							<button class="btn btn-launch" onclick="createDonation()" id="donate_btn" style="display: none; margin-top: 10px;"></button> 
 							<button class="btn btn-launch" style="margin-left: 10px; margin-top: 10px;" onclick="beneficiariesInfo()">MORE INFO</button> 
-							<button class="btn btn-launch" style="margin-left: 10px; margin-top: 10px;" onclick="infoChecksum()">CHECKSUM TEST</button>
+							<button class="btn btn-launch" style="margin-left: 10px; margin-top: 10px;" onclick="infoChecksum()">CHECKSUM</button>
+							<button class="btn btn-launch" onclick="showReport()" id="rep_btn" style="margin-left: 10px; margin-top: 10px; display: none;">REPORT</button> 
 						</div>
-						</center>
+						<div id="report_div" style="display: none;">
+							<p style="font-size: 13pt; color: black;"><br><strong>Report a campaign</strong><br>In order report the campaign you need to invest some ether
+							<br><br>
+							ETH <input type="number" id="rep_amount" step="0.001" min="0" value="0">
+							<br><br>
+							<button onclick="reportCampaign()">REPORT</button>
+							</p>
+						</div>
 						<div id="check" style="display: none;">
 							<p style="font-size: 13pt; color: black;"><br>During the creation of the campaign, some of the information are not saved on the blockchain for economical and ethical reasons.
 							Nevertheless, for this information a checksum is saved on the blockchain in order to provide reliability of information.
@@ -137,7 +148,7 @@
 							</div>
 						</div>
 						<div id="donation" style="display: none;">
-							<p style="font-size: 13pt; color: black;"><br>Make a donation</p>
+							<p style="font-size: 13pt; color: black;"><br><strong>Make a donation</strong></p>
 							<p style="display: none;  color: black;" id="don_2">All organizers have to make a donation in order to start the campaign</p>
 							<div id="donation_table"></div>
 							<br>
@@ -151,11 +162,7 @@
 				<!--/main content-->
 				<!--sidebar-->
 				<div class="content col-md-4 col-sm-12 col-xs-12">
-					<div class="section-block summary">
-						<center>
-						<button id="rep-btn" style="display: none;" onclick="reportCampaign()" class="btn btn-contact"><i class="fa fa-exclamation-triangle" ></i>REPORT CAMPAIGN</button><br><br>
-						</center>
-					</div>
+					
 					<div class="section-block">
 						<h1 class="section-title">REWARDS</h1>
 						<p id="no-rew" style="display: none;">This campaign has no rewards</p>

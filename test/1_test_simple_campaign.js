@@ -43,13 +43,6 @@ contract("BitCollect Test", async accounts => {
         let donation_2 = await campaign_instance.makeDonation([beneficiarir_1],[3000], "", {from: accounts[6], value:3000})
         truffleAssert.eventEmitted(donation_2, 'donationSuccess')
 
-        /*//Check donations
-        let don_1 = await campaign_instance.getUserRewards({from: accounts[6]})
-        console.log(don_1)
-
-        let don_2 = await campaign_instance.getUserRewards({from: accounts[5]})
-        console.log(don_2)*/
-
         //End the campaign
         let end_campaign = await campaign_instance.endCampaign({from: organizer_1})
         truffleAssert.eventEmitted(end_campaign, 'campainStatus', (ev) => {return ev.s == State["EXPIRED"]})

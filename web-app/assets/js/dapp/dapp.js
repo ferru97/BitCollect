@@ -100,7 +100,9 @@ App = {
                     report_threshold: await instance.thresholdFraud(),
                     report_number: await instance.getReportsNumber(),
                     user_donations:  await instance.getUserDonation({from: App.account}),
-                    user_rewards:  await instance.getUserRewards({from: App.account})
+                    user_rewards:  await instance.getUserRewards({from: App.account}),
+                    organizer_donated: await instance.organizerHaveDonated({from: App.account}),
+                    user_reported: await instance.userHaveReported({from: App.account})
                 }
                 callback(info);
             }catch(err){
@@ -133,6 +135,18 @@ App = {
             }
         });
     },
+
+    reportCampaign: function(campaign_addr ,val, callback){
+        App.contracts["Campaign"].at(campaign_addr).then(async(instance) =>{
+            try{
+                var tx_report = await instance.reportFraud({from: App.account, value:val});
+                callback(tx_report);
+            }catch(err){
+                alert("Something went wrong ... You can only report once")
+                console.log(err)
+            }
+        });      
+    }
 }
 
 window.ethereum.on('accountsChanged', function (accounts) {

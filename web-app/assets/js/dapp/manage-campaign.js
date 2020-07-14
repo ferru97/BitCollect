@@ -71,16 +71,21 @@ function setCampaignInfo(info){
                 $("#is-org").css("display","inline")
                 $("#don_2").show()
             }
-                
 
+            if(isBeneficiary()){
+                $("#is-ben").show()
+            }
+               
             if(isOrganizer() && state_index==0){
                 $("#donate_btn").html("START CAMPAIGN")
                 $("#donate_btn").show()
             }
+
+
             if(state_index==1){
                 $("#donate_btn").html("DONATE")
                 $("#donate_btn").show()
-                $("#rep-btn").show()
+                $("#rep_btn").show()
             }
 
             $("#operations").show()
@@ -102,6 +107,16 @@ function isOrganizer(){
             isOrganizer = true
     }
     return isOrganizer
+}
+
+function isBeneficiary(){
+    var isBeneficiary = false;
+    for(var i=0; i<blockchain_data.beneficiaries.length && !isBeneficiary; i++){
+        
+        if(blockchain_data.beneficiaries[i].toLowerCase() == App.account)
+            isBeneficiary = true
+    }
+    return isBeneficiary
 }
 
 
@@ -165,6 +180,12 @@ function beneficiariesInfo(){
 }
 
 function createDonation(){
+
+    if(state_index==0 && blockchain_data.organizer_donated==true){
+        alert("As organizer you have already donated to start this campaign. Wait the other organizers to start the campaign")
+        return
+    }
+
     closeAllOptions()
     $("#donation").show()
 
@@ -233,6 +254,7 @@ function closeAllOptions(){
     $("#check").hide()
     $("#ben_info").hide()
     $("#donation").hide()
+    $("#report_div").hide()
 }
 
 
@@ -274,7 +296,35 @@ function printUserDonations(){
 }
 
 
+function showReport(){
+    closeAllOptions()
+    if(blockchain_data.user_reported==true){
+        alert("You have already reported this campaign")
+        return
+    }
+    $("#report_div").show()
+}
+
 function reportCampaign(){
-    var confirm = confirm("Do you want to report this campaign?");
+    var amount = $("#rep_amount").val()
+    if(amount<=0){
+        alert("Error: Provide some ether")
+        return
+    }
+
+    var conf = confirm("Do you want to report this campaign?");
+    if(conf){
+        var wei = Web3.utils.toWei(amount.toString(), 'ether');
+        App.reportCampaign(campaign_address, wei, reportCallback)
+    }
+}
+
+function reportCallback(tx){
+    if(tx.logs[0].event == "fraudReported"){
+        alert("Campaign reported successfully!") 
+        location.reload()
+    }
+    else
+        alert("Something went wrong...")
 }
 

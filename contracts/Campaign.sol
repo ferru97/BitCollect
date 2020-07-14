@@ -303,8 +303,22 @@ contract Campaign{
 
         for(uint i = 0; i<rewards.length; i++)
             rewards[i] = user_rewards[i].max_reward_index;
-        
+            
         return rewards;
+    }
+
+    function userHaveReported()public view returns(bool){
+        if(reports_investments[msg.sender]>0)
+            return true;
+        else
+            return false;
+    }
+
+    function organizerHaveDonated()public view isOrganizer(msg.sender) returns(bool) {
+        if(organizers_donation[msg.sender])
+            return true;
+        else
+            return false;
     }
 
 

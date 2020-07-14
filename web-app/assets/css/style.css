@@ -360,7 +360,7 @@ a {
 	color: #FFF;
 	font-size: 17px;
 	font-weight: 600;
-	padding: 10px 25px;
+	padding: 10px 20px;
 }
 .btn.btn-launch:hover, .btn.btn-launch:focus,.btn.btn-reward, .btn.btn-reward:hover, .btn.btn-reward :focus {
 	background-color:#85AD90;

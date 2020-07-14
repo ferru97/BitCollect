@@ -49,7 +49,6 @@ function addReward(){
     var rew_price = $("#rew_price").val()
     if(rew.length>0 && rew_price>0){
         var price_wei = web3.utils.toWei(rew_price, 'ether')
-        alert(price_wei)
         $("#rew_list").append("ETH "+rew_price+": "+rew+"<br>")
         rewards_names.push(rew)
         rewards_costs.push(price_wei)
