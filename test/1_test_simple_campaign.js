@@ -1,12 +1,13 @@
 const BitCollect = artifacts.require("BitCollect");
 const Campaign = artifacts.require("Campaign");
 const truffleAssert = require('truffle-assertions');
+var sleep = require('sleep');
 
 var State = {"PENDING":0, "RUNNING":1, "EXPIRED":2, "DEACTIVATED":3, "BLOCKED":4}
 
 contract("BitCollect Test", async accounts => {
     var campaign_instance = null
-    var start_date = 1595699440
+    var end_date = Math.floor(Date.now() / 1000) + 5 //Test campaign lasts 5 seconds
 
     organizer_1 = accounts[1]
     organizer_2 = accounts[2]
@@ -19,7 +20,7 @@ contract("BitCollect Test", async accounts => {
         var new_contract_addr = null;
 
         //Create and start campaign
-        let new_contract = await instance.createCampaign([organizer_1, organizer_2],[beneficiarir_1, beneficiarir_2], start_date, [], "")   
+        let new_contract = await instance.createCampaign([organizer_1, organizer_2],[beneficiarir_1, beneficiarir_2], end_date, [], "")   
         truffleAssert.eventEmitted(new_contract, 'campaignCreated', (ev) => {
             if (ev.cont!=undefined && ev.cont.substr(0,2)=="0x"){
                 new_contract_addr = ev.cont
@@ -43,9 +44,8 @@ contract("BitCollect Test", async accounts => {
         let donation_2 = await campaign_instance.makeDonation([beneficiarir_1],[3000], "", {from: accounts[6], value:3000})
         truffleAssert.eventEmitted(donation_2, 'donationSuccess')
 
-        //End the campaign
-        let end_campaign = await campaign_instance.endCampaign({from: organizer_1})
-        truffleAssert.eventEmitted(end_campaign, 'campainStatus', (ev) => {return ev.s == State["EXPIRED"]})
+        //Wait the end of the campaign
+        sleep.sleep(5)
 
         //Check the beneficiarirs rewards
         let beneficiaries = await campaign_instance.getAllBeneficiaries()

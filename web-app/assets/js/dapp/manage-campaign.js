@@ -1,5 +1,5 @@
 
-//campaign test 0xF7BDC5fEbff44E2482D0c5D7b89ab1a36B6179EC
+//campaign test 0x2105aD1883e0F497bf0A174E2f83139eB5bfC969
 var State = ["PENDING", "RUNNING", "EXPIRED", "DEACTIVATED", "BLOCKED"]
 var state_index = null;
 var campaign_address = null

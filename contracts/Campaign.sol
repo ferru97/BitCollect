@@ -73,8 +73,23 @@ contract Campaign{
         _;
     }
 
-    modifier campaignNotEnded(uint current_timestamp) {
-        require(current_timestamp < campaign_end_timestamp, "Error: campaign deadline expired");
+    modifier campaignNotEnded() {
+        require(block.timestamp <= campaign_end_timestamp, "Error: campaign deadline expired");
+        _;
+    }
+
+    modifier campaignExpired(){
+        if(block.timestamp > campaign_end_timestamp && state==State.RUNNING){
+             state = State.EXPIRED;
+            //Subdivide ether from reporter to all beneficiaries
+            if (fraud_report_amount > 0){
+                uint plus = uint(fraud_report_amount/beneficiaries.length);
+                for(uint i = 0; i<beneficiaries.length; i++)
+                    beneficiaries_map[beneficiaries[i]].amount += plus;
+            }
+        }
+        
+        require(state == State.EXPIRED, "Error: campaign not yet expired");
         _;
     }
 
@@ -104,7 +119,7 @@ contract Campaign{
     }
 
     function startCampaign(address[] calldata to, uint[] calldata wei_partition, string calldata contact_email)
-     campaignNotEnded(block.timestamp) external payable isOrganizer(msg.sender) beneficiariesExist(to) requireState(State.PENDING){//RQ-PARAMS
+     campaignNotEnded() external payable isOrganizer(msg.sender) beneficiariesExist(to) requireState(State.PENDING){//RQ-PARAMS
         
         makeDonation(to, wei_partition, contact_email);
 
@@ -129,7 +144,7 @@ contract Campaign{
 
 
     function makeDonation(address[] memory to, uint[] memory wei_partition, string memory contact_email)public payable
-     campaignNotEnded(block.timestamp)beneficiariesExist(to){
+     campaignNotEnded() beneficiariesExist(to){
          
         require(state==State.RUNNING || (state==State.PENDING && organizers_donation[msg.sender]==false),
                 "Error: The campaign is not started or you're not an organizer to start it");
@@ -173,7 +188,7 @@ contract Campaign{
     }
 
 
-    function beneficiaryWithdraw() external isBeneficiary(msg.sender) requireState(State.EXPIRED){
+    function beneficiaryWithdraw() external isBeneficiary(msg.sender) campaignExpired(){
         require(beneficiaries_map[msg.sender].amount > 0, "Error: there have been no donations for this beneficiary");
 
         uint amount = beneficiaries_map[msg.sender].amount;
@@ -184,20 +199,6 @@ contract Campaign{
 
         emit withdrawSuccess(msg.sender,amount);
 
-    }
-
-
-    function endCampaign() public isOrganizer(msg.sender) requireState(State.RUNNING){
-        state = State.EXPIRED;
-
-        //Subdivide ether from reporter to all beneficiaries
-        if (fraud_report_amount > 0){
-            uint plus = uint(fraud_report_amount/beneficiaries.length);
-            for(uint i = 0; i<beneficiaries.length; i++)
-                beneficiaries_map[beneficiaries[i]].amount += plus;
-        }
-
-        emit campainStatus(state);
     }
 
 

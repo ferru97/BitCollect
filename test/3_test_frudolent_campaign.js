@@ -1,12 +1,12 @@
 const BitCollect = artifacts.require("BitCollect");
 const Campaign = artifacts.require("Campaign");
 const truffleAssert = require('truffle-assertions');
+var sleep = require('sleep');
 
 var State = {"PENDING":0, "RUNNING":1, "EXPIRED":2, "DEACTIVATED":3, "BLOCKED":4}
 
 contract("BitCollect Test", async accounts => {
     var campaign_instance = null
-    var start_date = 1595699440
 
     organizer_1 = accounts[1]
     organizer_2 = accounts[2]
@@ -15,6 +15,7 @@ contract("BitCollect Test", async accounts => {
     beneficiarir_2 = accounts[4]
 
     it("Block fraudolent campaign", async () => {
+        var end_date = Math.floor(Date.now() / 1000) + 5 //Test campaign lasts 5 seconds
         let instance = await BitCollect.deployed()
         var new_contract_addr = null;
 
@@ -22,7 +23,7 @@ contract("BitCollect Test", async accounts => {
         await instance.setThreshold(2);
 
         //Create and start campaign
-        let new_contract = await instance.createCampaign([organizer_1, organizer_2],[beneficiarir_1, beneficiarir_2], start_date, [], "")   
+        let new_contract = await instance.createCampaign([organizer_1, organizer_2],[beneficiarir_1, beneficiarir_2], end_date, [], "")   
         truffleAssert.eventEmitted(new_contract, 'campaignCreated', (ev) => {
             if (ev.cont!=undefined && ev.cont.substr(0,2)=="0x"){
                 new_contract_addr = ev.cont
@@ -74,6 +75,7 @@ contract("BitCollect Test", async accounts => {
 
 
     it("Campaign reported but not declared fraudolent", async () => {
+        var end_date = Math.floor(Date.now() / 1000) + 10 //Test campaign lasts 5 seconds
         let instance = await BitCollect.deployed()
         var new_contract_addr = null;
 
@@ -81,7 +83,7 @@ contract("BitCollect Test", async accounts => {
         await instance.setThreshold(3);
 
         //Create and start campaign
-        let new_contract = await instance.createCampaign([organizer_1, organizer_2],[beneficiarir_1, beneficiarir_2], start_date, [], "")   
+        let new_contract = await instance.createCampaign([organizer_1, organizer_2],[beneficiarir_1, beneficiarir_2], end_date, [], "")   
         truffleAssert.eventEmitted(new_contract, 'campaignCreated', (ev) => {
             if (ev.cont!=undefined && ev.cont.substr(0,2)=="0x"){
                 new_contract_addr = ev.cont
@@ -113,9 +115,8 @@ contract("BitCollect Test", async accounts => {
         let report_2 = await campaign_instance.reportFraud({from: accounts[7], value:3000})
         truffleAssert.eventEmitted(report_2, 'fraudReported', (ev) => {return ev.s == State["RUNNING"]})
 
-        //End the campaign
-        let end_campaign = await campaign_instance.endCampaign({from: organizer_1})
-        truffleAssert.eventEmitted(end_campaign, 'campainStatus', (ev) => {return ev.s == State["EXPIRED"]})
+        //Wait the end of the campaign
+        sleep.sleep(10)
 
         //Beneficiaries withdraw
         let report_amount_plus = 2000 //reporter invesments divided by all beneficiaries 4000/2

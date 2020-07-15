@@ -12,14 +12,14 @@
     "absolutePath": "/G/SSD Workspace/Ethereum/BitCollect/contracts/Library.sol",
     "exportedSymbols": {
       "Library": [
-        1455
+        1450
       ]
     },
-    "id": 1456,
+    "id": 1451,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1428,
+        "id": 1423,
         "literals": [
           "solidity",
           ">=",
@@ -38,23 +38,23 @@
         "contractKind": "library",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 1455,
+        "id": 1450,
         "linearizedBaseContracts": [
-          1455
+          1450
         ],
         "name": "Library",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "canonicalName": "Library.Reward",
-            "id": 1433,
+            "id": 1428,
             "members": [
               {
                 "constant": false,
-                "id": 1430,
+                "id": 1425,
                 "name": "amount",
                 "nodeType": "VariableDeclaration",
-                "scope": 1433,
+                "scope": 1428,
                 "src": "84:11:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -63,7 +63,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1429,
+                  "id": 1424,
                   "name": "uint",
                   "nodeType": "ElementaryTypeName",
                   "src": "84:4:2",
@@ -77,10 +77,10 @@
               },
               {
                 "constant": false,
-                "id": 1432,
+                "id": 1427,
                 "name": "flag",
                 "nodeType": "VariableDeclaration",
-                "scope": 1433,
+                "scope": 1428,
                 "src": "106:9:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -89,7 +89,7 @@
                   "typeString": "bool"
                 },
                 "typeName": {
-                  "id": 1431,
+                  "id": 1426,
                   "name": "bool",
                   "nodeType": "ElementaryTypeName",
                   "src": "106:4:2",
@@ -104,20 +104,20 @@
             ],
             "name": "Reward",
             "nodeType": "StructDefinition",
-            "scope": 1455,
+            "scope": 1450,
             "src": "60:63:2",
             "visibility": "public"
           },
           {
             "canonicalName": "Library.DonationReward",
-            "id": 1440,
+            "id": 1435,
             "members": [
               {
                 "constant": false,
-                "id": 1435,
+                "id": 1430,
                 "name": "max_reward_index",
                 "nodeType": "VariableDeclaration",
-                "scope": 1440,
+                "scope": 1435,
                 "src": "163:21:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -126,7 +126,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1434,
+                  "id": 1429,
                   "name": "uint",
                   "nodeType": "ElementaryTypeName",
                   "src": "163:4:2",
@@ -140,10 +140,10 @@
               },
               {
                 "constant": false,
-                "id": 1437,
+                "id": 1432,
                 "name": "donation_index",
                 "nodeType": "VariableDeclaration",
-                "scope": 1440,
+                "scope": 1435,
                 "src": "195:19:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -152,7 +152,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1436,
+                  "id": 1431,
                   "name": "uint",
                   "nodeType": "ElementaryTypeName",
                   "src": "195:4:2",
@@ -166,10 +166,10 @@
               },
               {
                 "constant": false,
-                "id": 1439,
+                "id": 1434,
                 "name": "email_contact",
                 "nodeType": "VariableDeclaration",
-                "scope": 1440,
+                "scope": 1435,
                 "src": "225:20:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -178,7 +178,7 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 1438,
+                  "id": 1433,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
                   "src": "225:6:2",
@@ -193,20 +193,20 @@
             ],
             "name": "DonationReward",
             "nodeType": "StructDefinition",
-            "scope": 1455,
+            "scope": 1450,
             "src": "131:122:2",
             "visibility": "public"
           },
           {
             "canonicalName": "Library.Donation",
-            "id": 1449,
+            "id": 1444,
             "members": [
               {
                 "constant": false,
-                "id": 1442,
+                "id": 1437,
                 "name": "amount",
                 "nodeType": "VariableDeclaration",
-                "scope": 1449,
+                "scope": 1444,
                 "src": "287:11:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -215,7 +215,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1441,
+                  "id": 1436,
                   "name": "uint",
                   "nodeType": "ElementaryTypeName",
                   "src": "287:4:2",
@@ -229,10 +229,10 @@
               },
               {
                 "constant": false,
-                "id": 1445,
+                "id": 1440,
                 "name": "donation_beneficiaries",
                 "nodeType": "VariableDeclaration",
-                "scope": 1449,
+                "scope": 1444,
                 "src": "309:32:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -242,7 +242,7 @@
                 },
                 "typeName": {
                   "baseType": {
-                    "id": 1443,
+                    "id": 1438,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "309:7:2",
@@ -252,7 +252,7 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 1444,
+                  "id": 1439,
                   "length": null,
                   "nodeType": "ArrayTypeName",
                   "src": "309:9:2",
@@ -266,10 +266,10 @@
               },
               {
                 "constant": false,
-                "id": 1448,
+                "id": 1443,
                 "name": "danation_partitions",
                 "nodeType": "VariableDeclaration",
-                "scope": 1449,
+                "scope": 1444,
                 "src": "352:26:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -279,7 +279,7 @@
                 },
                 "typeName": {
                   "baseType": {
-                    "id": 1446,
+                    "id": 1441,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "352:4:2",
@@ -288,7 +288,7 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 1447,
+                  "id": 1442,
                   "length": null,
                   "nodeType": "ArrayTypeName",
                   "src": "352:6:2",
@@ -303,20 +303,20 @@
             ],
             "name": "Donation",
             "nodeType": "StructDefinition",
-            "scope": 1455,
+            "scope": 1450,
             "src": "261:125:2",
             "visibility": "public"
           },
           {
             "canonicalName": "Library.FraudReporter",
-            "id": 1454,
+            "id": 1449,
             "members": [
               {
                 "constant": false,
-                "id": 1451,
+                "id": 1446,
                 "name": "reporter",
                 "nodeType": "VariableDeclaration",
-                "scope": 1454,
+                "scope": 1449,
                 "src": "425:16:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -325,7 +325,7 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 1450,
+                  "id": 1445,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "425:7:2",
@@ -340,10 +340,10 @@
               },
               {
                 "constant": false,
-                "id": 1453,
+                "id": 1448,
                 "name": "flag",
                 "nodeType": "VariableDeclaration",
-                "scope": 1454,
+                "scope": 1449,
                 "src": "452:9:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -352,7 +352,7 @@
                   "typeString": "bool"
                 },
                 "typeName": {
-                  "id": 1452,
+                  "id": 1447,
                   "name": "bool",
                   "nodeType": "ElementaryTypeName",
                   "src": "452:4:2",
@@ -367,12 +367,12 @@
             ],
             "name": "FraudReporter",
             "nodeType": "StructDefinition",
-            "scope": 1455,
+            "scope": 1450,
             "src": "394:75:2",
             "visibility": "public"
           }
         ],
-        "scope": 1456,
+        "scope": 1451,
         "src": "36:438:2"
       }
     ],
@@ -382,14 +382,14 @@
     "absolutePath": "/G/SSD Workspace/Ethereum/BitCollect/contracts/Library.sol",
     "exportedSymbols": {
       "Library": [
-        1455
+        1450
       ]
     },
-    "id": 1456,
+    "id": 1451,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1428,
+        "id": 1423,
         "literals": [
           "solidity",
           ">=",
@@ -408,23 +408,23 @@
         "contractKind": "library",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 1455,
+        "id": 1450,
         "linearizedBaseContracts": [
-          1455
+          1450
         ],
         "name": "Library",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "canonicalName": "Library.Reward",
-            "id": 1433,
+            "id": 1428,
             "members": [
               {
                 "constant": false,
-                "id": 1430,
+                "id": 1425,
                 "name": "amount",
                 "nodeType": "VariableDeclaration",
-                "scope": 1433,
+                "scope": 1428,
                 "src": "84:11:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -433,7 +433,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1429,
+                  "id": 1424,
                   "name": "uint",
                   "nodeType": "ElementaryTypeName",
                   "src": "84:4:2",
@@ -447,10 +447,10 @@
               },
               {
                 "constant": false,
-                "id": 1432,
+                "id": 1427,
                 "name": "flag",
                 "nodeType": "VariableDeclaration",
-                "scope": 1433,
+                "scope": 1428,
                 "src": "106:9:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -459,7 +459,7 @@
                   "typeString": "bool"
                 },
                 "typeName": {
-                  "id": 1431,
+                  "id": 1426,
                   "name": "bool",
                   "nodeType": "ElementaryTypeName",
                   "src": "106:4:2",
@@ -474,20 +474,20 @@
             ],
             "name": "Reward",
             "nodeType": "StructDefinition",
-            "scope": 1455,
+            "scope": 1450,
             "src": "60:63:2",
             "visibility": "public"
           },
           {
             "canonicalName": "Library.DonationReward",
-            "id": 1440,
+            "id": 1435,
             "members": [
               {
                 "constant": false,
-                "id": 1435,
+                "id": 1430,
                 "name": "max_reward_index",
                 "nodeType": "VariableDeclaration",
-                "scope": 1440,
+                "scope": 1435,
                 "src": "163:21:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -496,7 +496,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1434,
+                  "id": 1429,
                   "name": "uint",
                   "nodeType": "ElementaryTypeName",
                   "src": "163:4:2",
@@ -510,10 +510,10 @@
               },
               {
                 "constant": false,
-                "id": 1437,
+                "id": 1432,
                 "name": "donation_index",
                 "nodeType": "VariableDeclaration",
-                "scope": 1440,
+                "scope": 1435,
                 "src": "195:19:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -522,7 +522,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1436,
+                  "id": 1431,
                   "name": "uint",
                   "nodeType": "ElementaryTypeName",
                   "src": "195:4:2",
@@ -536,10 +536,10 @@
               },
               {
                 "constant": false,
-                "id": 1439,
+                "id": 1434,
                 "name": "email_contact",
                 "nodeType": "VariableDeclaration",
-                "scope": 1440,
+                "scope": 1435,
                 "src": "225:20:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -548,7 +548,7 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 1438,
+                  "id": 1433,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
                   "src": "225:6:2",
@@ -563,20 +563,20 @@
             ],
             "name": "DonationReward",
             "nodeType": "StructDefinition",
-            "scope": 1455,
+            "scope": 1450,
             "src": "131:122:2",
             "visibility": "public"
           },
           {
             "canonicalName": "Library.Donation",
-            "id": 1449,
+            "id": 1444,
             "members": [
               {
                 "constant": false,
-                "id": 1442,
+                "id": 1437,
                 "name": "amount",
                 "nodeType": "VariableDeclaration",
-                "scope": 1449,
+                "scope": 1444,
                 "src": "287:11:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -585,7 +585,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1441,
+                  "id": 1436,
                   "name": "uint",
                   "nodeType": "ElementaryTypeName",
                   "src": "287:4:2",
@@ -599,10 +599,10 @@
               },
               {
                 "constant": false,
-                "id": 1445,
+                "id": 1440,
                 "name": "donation_beneficiaries",
                 "nodeType": "VariableDeclaration",
-                "scope": 1449,
+                "scope": 1444,
                 "src": "309:32:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -612,7 +612,7 @@
                 },
                 "typeName": {
                   "baseType": {
-                    "id": 1443,
+                    "id": 1438,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "309:7:2",
@@ -622,7 +622,7 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 1444,
+                  "id": 1439,
                   "length": null,
                   "nodeType": "ArrayTypeName",
                   "src": "309:9:2",
@@ -636,10 +636,10 @@
               },
               {
                 "constant": false,
-                "id": 1448,
+                "id": 1443,
                 "name": "danation_partitions",
                 "nodeType": "VariableDeclaration",
-                "scope": 1449,
+                "scope": 1444,
                 "src": "352:26:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -649,7 +649,7 @@
                 },
                 "typeName": {
                   "baseType": {
-                    "id": 1446,
+                    "id": 1441,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "352:4:2",
@@ -658,7 +658,7 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 1447,
+                  "id": 1442,
                   "length": null,
                   "nodeType": "ArrayTypeName",
                   "src": "352:6:2",
@@ -673,20 +673,20 @@
             ],
             "name": "Donation",
             "nodeType": "StructDefinition",
-            "scope": 1455,
+            "scope": 1450,
             "src": "261:125:2",
             "visibility": "public"
           },
           {
             "canonicalName": "Library.FraudReporter",
-            "id": 1454,
+            "id": 1449,
             "members": [
               {
                 "constant": false,
-                "id": 1451,
+                "id": 1446,
                 "name": "reporter",
                 "nodeType": "VariableDeclaration",
-                "scope": 1454,
+                "scope": 1449,
                 "src": "425:16:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -695,7 +695,7 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 1450,
+                  "id": 1445,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "425:7:2",
@@ -710,10 +710,10 @@
               },
               {
                 "constant": false,
-                "id": 1453,
+                "id": 1448,
                 "name": "flag",
                 "nodeType": "VariableDeclaration",
-                "scope": 1454,
+                "scope": 1449,
                 "src": "452:9:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -722,7 +722,7 @@
                   "typeString": "bool"
                 },
                 "typeName": {
-                  "id": 1452,
+                  "id": 1447,
                   "name": "bool",
                   "nodeType": "ElementaryTypeName",
                   "src": "452:4:2",
@@ -737,12 +737,12 @@
             ],
             "name": "FraudReporter",
             "nodeType": "StructDefinition",
-            "scope": 1455,
+            "scope": 1450,
             "src": "394:75:2",
             "visibility": "public"
           }
         ],
-        "scope": 1456,
+        "scope": 1451,
         "src": "36:438:2"
       }
     ],
@@ -761,7 +761,7 @@
     }
   },
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-07-14T20:01:48.694Z",
+  "updatedAt": "2020-07-15T08:33:48.343Z",
   "devdoc": {
     "methods": {}
   },
