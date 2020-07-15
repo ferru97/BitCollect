@@ -84,25 +84,39 @@ App = {
     getCampaignInfo: function(address, callback){
         App.contracts["Campaign"].at(address).then(async(instance) =>{
             var beneficiaries = await instance.getAllBeneficiaries()
+            beneficiaries = beneficiaries.map(b => b.toLowerCase());
+            var organizers = await instance.getAllOrganizers()
+            organizers = organizers.map(b => b.toLowerCase());
+
             var beneficiaries_rewards = []
             for(var i=0; i<beneficiaries.length; i++)
                 beneficiaries_rewards.push(await instance.getBeneficiaryReward(beneficiaries[i]));
+
+            var org_have_donated = null;
+            if(organizers.includes(App.account))
+                org_have_donated = await instance.organizerHaveDonated({from: App.account})
+
+            var beneficiary_withdrawn = null
+            if(beneficiaries.includes(App.account))  
+                beneficiary_withdrawn = await instance.beneficiaryHaveWithdrawn({from: App.account})
             
             try{
                 var info = {
                     state: await instance.state(),
                     beneficiaries: beneficiaries,
                     beneficiaries_rewards: beneficiaries_rewards,
-                    organizers: await instance.getAllOrganizers(),
+                    organizers: organizers,
                     rewards_prices: await instance.getAllRewardsPrices(),
                     end_date: await instance.campaign_end_timestamp(),
                     info_hashes: await instance.info_hashes(),
                     report_threshold: await instance.thresholdFraud(),
-                    report_number: await instance.getReportsNumber(),
+                    report_number: await instance.reports_number(),
                     user_donations:  await instance.getUserDonation({from: App.account}),
                     user_rewards:  await instance.getUserRewards({from: App.account}),
-                    organizer_donated: await instance.organizerHaveDonated({from: App.account}),
-                    user_reported: await instance.userHaveReported({from: App.account})
+                    organizer_donated: org_have_donated,
+                    user_reported: await instance.userHaveReported({from: App.account}),
+                    beneficiary_withdrawn: beneficiary_withdrawn,
+                    report_investment: await instance.report_investment(),
                 }
                 callback(info);
             }catch(err){
@@ -142,10 +156,22 @@ App = {
                 var tx_report = await instance.reportFraud({from: App.account, value:val});
                 callback(tx_report);
             }catch(err){
-                alert("Something went wrong ... You can only report once")
+                alert("Something went wrong...")
                 console.log(err)
             }
         });      
+    },
+
+    beneficiaryWithdraw: function(campaign_addr,callback){
+        App.contracts["Campaign"].at(campaign_addr).then(async(instance) =>{
+            try{
+                var tx_report = await instance.beneficiaryWithdraw({from: App.account});
+                callback(tx_report);
+            }catch(err){
+                alert("Something went wrong ..")
+                console.log(err)
+            }
+        });
     }
 }
 

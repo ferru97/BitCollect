@@ -42,19 +42,26 @@ function setCampaignInfo(info){
                 total_raised += parseFloat(Web3.utils.fromWei(blockchain_data.beneficiaries_rewards[i], 'ether'))
                 
 
-            var end_date = new Date(blockchain_data.end_date.toString() * 1000);
-            end_date = end_date.getFullYear() + "/" + end_date.getMonth() + "/" + end_date.getDate()
-
-            state_index = blockchain_data.state.toNumber();
+            var now = Math.floor(Date.now() / 1000)
+            if(blockchain_data.end_date.toNumber()<now){
+                if(isBeneficiary())
+                    $("#ben-wit").show()
+                state_index = 2
+            }else{
+                state_index = blockchain_data.state.toNumber();
+            }
+            var end_date = new Date(blockchain_data.end_date.toString()*1000);
+            end_date = end_date.getFullYear() + "/" + end_date.getMonth() + "/" + end_date.getDate()+ " "+end_date.getHours()+ ":" +end_date.getMinutes()  
 
             $("#name").text(db_data.name);
-            $("#desc").text(db_data.description);
+            $("#desc").html("<strong>Campaign Description</strong><br>"+db_data.description);
             if(db_data.image_link.length>0)
                 $("#img").attr("src",db_data.image_link);
             $("#raised").text(total_raised+" ETH")
             $("#end_dt").text(end_date)
             $("#state").text(State[state_index])
             $("#report").text(blockchain_data.report_number.toString()+"/"+blockchain_data.report_threshold.toString())
+            $("#inv-amount").text(Web3.utils.fromWei(blockchain_data.report_investment, 'ether')+" ETH")
 
 
             var rewards = ""
@@ -102,7 +109,6 @@ function setCampaignInfo(info){
 function isOrganizer(){
     var isOrganizer = false;
     for(var i=0; i<blockchain_data.organizers.length && !isOrganizer; i++){
-        
         if(blockchain_data.organizers[i].toLowerCase() == App.account)
             isOrganizer = true
     }
@@ -180,6 +186,9 @@ function beneficiariesInfo(){
 }
 
 function createDonation(){
+    var now = Math.floor(Date.now() / 1000)
+    if(blockchain_data.end_date.toNumber()<now)
+        location.reload()
 
     if(state_index==0 && blockchain_data.organizer_donated==true){
         alert("As organizer you have already donated to start this campaign. Wait the other organizers to start the campaign")
@@ -196,8 +205,13 @@ function createDonation(){
         table += "<tr><td>"+db_data.bneficiaries_names[i]+"</td><td><button onclick='alert(\""+blockchain_data.beneficiaries[i]+"\")'>ADDRESS</button></td><td>"+input+"</td></tr>"
     }
 
-    table += "</table><table class='table2'><tr><td>E-mail address</td><td><input type='email' id='email'></td></tr></table>"
+    table += "</table><table class='table2'><tr><td id='em1'>E-mail address</td><td><input type='email' id='email'></td></tr></table>"
     $("#donation_table").html(table)
+
+    if(blockchain_data.rewards_prices.length==0){
+        $("#em1").hide()
+        $("#em2").hide()
+    }
 
     if(blockchain_data.rewards_prices.length==0)
         $("#email").hide()
@@ -306,17 +320,9 @@ function showReport(){
 }
 
 function reportCampaign(){
-    var amount = $("#rep_amount").val()
-    if(amount<=0){
-        alert("Error: Provide some ether")
-        return
-    }
-
     var conf = confirm("Do you want to report this campaign?");
-    if(conf){
-        var wei = Web3.utils.toWei(amount.toString(), 'ether');
-        App.reportCampaign(campaign_address, wei, reportCallback)
-    }
+    if(conf)
+        App.reportCampaign(campaign_address, blockchain_data.report_investment.toString(), reportCallback)
 }
 
 function reportCallback(tx){
@@ -326,5 +332,41 @@ function reportCallback(tx){
     }
     else
         alert("Something went wrong...")
+}
+
+
+
+function beneficiaryWithdraw(){
+    if(blockchain_data.beneficiary_withdrawn==true){
+        alert("You have already withdraw")
+        return
+    }
+    
+    var amount = null
+    for(var i=0; i<blockchain_data.beneficiaries.length; i++){
+        if(blockchain_data.beneficiaries[i].toLowerCase() == App.account)
+            amount = blockchain_data.beneficiaries_rewards[i].toString()
+    }
+    
+    if(amount=="0" && blockchain_data.report_number.toNumber()==0){
+        alert("There have been no donations for you and there are no funds from fraud reports")
+        return
+    }else{
+        App.beneficiaryWithdraw(campaign_address, withdrawSuccess)
+    }
+}
+
+function withdrawSuccess(tx){
+    if(tx.logs[0].event == "withdrawSuccess"){
+        //var amount = Web3.utils.fromWei(blockchain_data.rewards_prices[i].toString(), 'ether') 
+        var reward = Web3.utils.fromWei(tx.logs[0].args.amount, 'ether')
+        var plus = Web3.utils.fromWei(tx.logs[0].args.plus, 'ether')
+        var total = parseFloat(reward) + parseFloat(plus);
+        var msg = "Withdraw carried out successfully! You have earned "+total+"ETH: "+reward+"ETH from donors and "+plus+"ETH from reports"
+        alert(msg)
+        location.reload();
+    }
+    else
+        alert("Something went wrong")
 }
 

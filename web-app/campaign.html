@@ -85,8 +85,8 @@
 							<h2 id="raised"></h2>							
 							<span class="contribution">raised</span><br>
 							<div>
-								<div id="is-org" style="display: none;">You are an organizer of this campaign!</div>
-								<div id="is-ben" style="display: none;">You are a beneficiary of this campaign!</div>
+								<p id="is-org" style="display: none;">You are an organizer of this campaign!</p>
+								<p id="is-ben" style="display: none;">You are a beneficiary of this campaign!</p>
 							</div>
 							
 						</div>
@@ -99,14 +99,13 @@
 							<button class="btn btn-launch" onclick="createDonation()" id="donate_btn" style="display: none; margin-top: 10px;"></button> 
 							<button class="btn btn-launch" style="margin-left: 10px; margin-top: 10px;" onclick="beneficiariesInfo()">MORE INFO</button> 
 							<button class="btn btn-launch" style="margin-left: 10px; margin-top: 10px;" onclick="infoChecksum()">CHECKSUM</button>
-							<button class="btn btn-launch" onclick="showReport()" id="rep_btn" style="margin-left: 10px; margin-top: 10px; display: none;">REPORT</button> 
+							<button class="btn btn-launch" onclick="showReport()" id="rep_btn" style="margin-left: 10px; margin-top: 10px; display: none;">REPORT</button>
+							<button class="btn btn-launch" onclick="beneficiaryWithdraw()" id="ben-wit" style="margin-left: 10px; margin-top: 10px; display: none;">BENEFICIARY WITHDRAW</button> 
 						</div>
 						<div id="report_div" style="display: none;">
-							<p style="font-size: 13pt; color: black;"><br><strong>Report a campaign</strong><br>In order report the campaign you need to invest some ether
-							<br><br>
-							ETH <input type="number" id="rep_amount" step="0.001" min="0" value="0">
-							<br><br>
-							<button onclick="reportCampaign()">REPORT</button>
+							<p style="font-size: 13pt; color: black;"><br><strong>Report a campaign</strong><br>In order report this campaign you need to invest <strong id="inv-amount"></strong>
+							<br>
+							<center><button onclick="reportCampaign()">REPORT CAMPAIGN</button></center>
 							</p>
 						</div>
 						<div id="check" style="display: none;">
@@ -153,8 +152,8 @@
 							<div id="donation_table"></div>
 							<br>
 							<button onclick="makeDonation()">DONATE</button><br>
-							*The email address is needed only for as a contact to manage unlockd rewards<br>
-							You can omit this field if you don't unlock any reward
+							<P id='em2'>*The email address is needed only for as a contact to manage unlockd rewards<br>
+							You can omit this field if you don't unlock any reward</P>
 						</div>
 					</div>
 				</div>

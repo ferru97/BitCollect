@@ -7,6 +7,7 @@ var State = {"PENDING":0, "RUNNING":1, "EXPIRED":2, "DEACTIVATED":3, "BLOCKED":4
 
 contract("BitCollect Test", async accounts => {
     var campaign_instance = null
+    const fraud_investment = "50000000000000000"
 
     organizer_1 = accounts[1]
     organizer_2 = accounts[2]
@@ -20,7 +21,7 @@ contract("BitCollect Test", async accounts => {
         var new_contract_addr = null;
 
         //Set fraud threshold to 2 (for faster testing)
-        await instance.setThreshold(2);
+        await instance.setFraudThreshold(2);
 
         //Create and start campaign
         let new_contract = await instance.createCampaign([organizer_1, organizer_2],[beneficiarir_1, beneficiarir_2], end_date, [], "")   
@@ -53,23 +54,21 @@ contract("BitCollect Test", async accounts => {
 
 
         //Make some reports
-        let report_1 = await campaign_instance.reportFraud({from: accounts[5], value:1000}) //donors & reporter
+        let report_1 = await campaign_instance.reportFraud({from: accounts[5], value:fraud_investment}) //donors & reporter
         truffleAssert.eventEmitted(report_1, 'fraudReported', (ev) => {return ev.s == State["RUNNING"]})
 
-        let report_2 = await campaign_instance.reportFraud({from: accounts[7], value:1000})//reporter
+        let report_2 = await campaign_instance.reportFraud({from: accounts[7], value:fraud_investment})//reporter
         truffleAssert.eventEmitted(report_2, 'fraudReported', (ev) => {return ev.s == State["BLOCKED"]})
 
         //Execute make some reports
-        let init_donation_subdivision = 2500 //Division of thi initial donation for the reporter (300+2000)/2
-
         let withdraw_1 = await campaign_instance.fraudWithdraw({from: accounts[5]}) //test withdraw donor&reporter
-        truffleAssert.eventEmitted(withdraw_1, 'refoundEmitted', (ev) => {return ev.amount == 4000 && ev.plus == init_donation_subdivision})
+        truffleAssert.eventEmitted(withdraw_1, 'refoundEmitted', (ev) => {return ev.amount == 4000 && ev.plus == "50000000000002500"}) //"50000000000002500" = fraud_investment + subdivision of organizer initial donation  (3000+2000)/2
 
         let withdraw_2 = await campaign_instance.fraudWithdraw({from: accounts[6]}) //test withdraw donor
         truffleAssert.eventEmitted(withdraw_2, 'refoundEmitted', (ev) => {return ev.amount == 8000 && ev.plus == 0})
 
         let withdraw_3 = await campaign_instance.fraudWithdraw({from: accounts[7]}) //test withdraw reporter
-        truffleAssert.eventEmitted(withdraw_3, 'refoundEmitted', (ev) => {return ev.amount == 0 && ev.plus == init_donation_subdivision})
+        truffleAssert.eventEmitted(withdraw_3, 'refoundEmitted', (ev) => {return ev.amount == 0 && ev.plus == "50000000000002500"})
 
     });
 
@@ -80,7 +79,7 @@ contract("BitCollect Test", async accounts => {
         var new_contract_addr = null;
 
         //Set fraud threshold to 3
-        await instance.setThreshold(3);
+        await instance.setFraudThreshold(3);
 
         //Create and start campaign
         let new_contract = await instance.createCampaign([organizer_1, organizer_2],[beneficiarir_1, beneficiarir_2], end_date, [], "")   
@@ -109,23 +108,23 @@ contract("BitCollect Test", async accounts => {
         truffleAssert.eventEmitted(donation_2, 'donationSuccess')
 
         //Make some reports
-        let report_1 = await campaign_instance.reportFraud({from: accounts[5], value:1000}) 
+        let report_1 = await campaign_instance.reportFraud({from: accounts[5], value:fraud_investment}) 
         truffleAssert.eventEmitted(report_1, 'fraudReported', (ev) => {return ev.s == State["RUNNING"]})
 
-        let report_2 = await campaign_instance.reportFraud({from: accounts[7], value:3000})
+        let report_2 = await campaign_instance.reportFraud({from: accounts[7], value:fraud_investment})
         truffleAssert.eventEmitted(report_2, 'fraudReported', (ev) => {return ev.s == State["RUNNING"]})
 
         //Wait the end of the campaign
         sleep.sleep(10)
 
         //Beneficiaries withdraw
-        let report_amount_plus = 2000 //reporter invesments divided by all beneficiaries 4000/2
+        let report_amount_plus = "50000000000000000" //reporter invesments divided by all beneficiaries 4000/2
 
         let withdraw_b1 = await campaign_instance.beneficiaryWithdraw({from: beneficiarir_1})
-        truffleAssert.eventEmitted(withdraw_b1, 'withdrawSuccess', (ev) => {return ev.beneficiary==beneficiarir_1 && ev.amount==10000+report_amount_plus})
+        truffleAssert.eventEmitted(withdraw_b1, 'withdrawSuccess', (ev) => {return ev.amount==10000 && ev.plus==report_amount_plus})
         
         let withdraw_b2 = await campaign_instance.beneficiaryWithdraw({from: beneficiarir_2})
-        truffleAssert.eventEmitted(withdraw_b2, 'withdrawSuccess', (ev) => {return ev.beneficiary==beneficiarir_2 && ev.amount==6000+report_amount_plus})
+        truffleAssert.eventEmitted(withdraw_b2, 'withdrawSuccess', (ev) => {return ev.amount==6000 && ev.plus==report_amount_plus})
 
         //Deactivate campaign
         let deactivate = await campaign_instance.deactivateCampaign({from: organizer_1})

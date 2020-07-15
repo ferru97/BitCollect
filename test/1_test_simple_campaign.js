@@ -48,20 +48,18 @@ contract("BitCollect Test", async accounts => {
         sleep.sleep(5)
 
         //Check the beneficiarirs rewards
-        let beneficiaries = await campaign_instance.getAllBeneficiaries()
-        let beneficiaries_rewards = await campaign_instance.getBeneficiariesRewards(beneficiaries)
-        reward_ben1 = beneficiaries_rewards[0].words[0]
-        reward_ben2 = beneficiaries_rewards[1].words[0]
+        let reward_ben1 = await campaign_instance.getBeneficiaryReward(beneficiarir_1)
+        let reward_ben2 = await campaign_instance.getBeneficiaryReward(beneficiarir_2)
 
-        assert.equal(reward_ben1, 9000, "incorrect beneficiarie 1 reward");
-        assert.equal(reward_ben2, 6000, "incorrect beneficiarie 2 reward");
+        assert.equal(reward_ben1.toString(), "9000", "incorrect beneficiarie 1 reward");
+        assert.equal(reward_ben2.toString(), "6000", "incorrect beneficiarie 2 reward");
 
         //Beneficiaries withdraw
         let withdraw_b1 = await campaign_instance.beneficiaryWithdraw({from: beneficiarir_1})
-        truffleAssert.eventEmitted(withdraw_b1, 'withdrawSuccess', (ev) => {return ev.beneficiary==beneficiarir_1 && ev.amount==9000})
+        truffleAssert.eventEmitted(withdraw_b1, 'withdrawSuccess', (ev) => {return ev.amount.toString()=="9000"})
         
         let withdraw_b2 = await campaign_instance.beneficiaryWithdraw({from: beneficiarir_2})
-        truffleAssert.eventEmitted(withdraw_b2, 'withdrawSuccess', (ev) => {return ev.beneficiary==beneficiarir_2 && ev.amount==6000})
+        truffleAssert.eventEmitted(withdraw_b2, 'withdrawSuccess', (ev) => {return ev.amount.toString()=="6000"})
 
         //Deactivate campaign
         let deactivate = await campaign_instance.deactivateCampaign({from: organizer_1})
