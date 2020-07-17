@@ -93,8 +93,10 @@ App = {
                 beneficiaries_rewards.push(await instance.getBeneficiaryReward(beneficiaries[i]));
 
             var org_have_donated = null;
+            var withdrawn_number = null
             if(organizers.includes(App.account))
                 org_have_donated = await instance.organizerHaveDonated({from: App.account})
+                withdrawn_number = await instance.total_withdrawn({from: App.account})
 
             var beneficiary_withdrawn = null
             if(beneficiaries.includes(App.account))  
@@ -117,6 +119,8 @@ App = {
                     user_reported: await instance.userHaveReported({from: App.account}),
                     beneficiary_withdrawn: beneficiary_withdrawn,
                     report_investment: await instance.report_investment(),
+                    user_refunded: await instance.userHaveBeenRefunded({from: App.account}),
+                    withdrawn_number: withdrawn_number
                 }
                 callback(info);
             }catch(err){
@@ -172,7 +176,31 @@ App = {
                 console.log(err)
             }
         });
-    }
+    },
+
+    fraudWithdraw: function(campaign_addr,callback){
+        App.contracts["Campaign"].at(campaign_addr).then(async(instance) =>{
+            try{
+                var tx_report = await instance.fraudWithdraw({from: App.account});
+                callback(tx_report);
+            }catch(err){
+                alert("Something went wrong ..")
+                console.log(err)
+            }
+        });
+    },
+
+    closeCampaign: function(campaign_addr,callback){
+        App.contracts["Campaign"].at(campaign_addr).then(async(instance) =>{
+            try{
+                var tx_report = await instance.deactivateCampaign({from: App.account});
+                callback(tx_report);
+            }catch(err){
+                alert("Something went wrong ..")
+                console.log(err)
+            }
+        });
+    },
 }
 
 window.ethereum.on('accountsChanged', function (accounts) {

@@ -20,6 +20,7 @@ contract Campaign{
     address payable[] public beneficiaries;
     mapping(address => Library.Reward) public beneficiaries_map;
     mapping(address => bool) beneficiary_withdrawn;
+    uint public total_withdrawn;
 
     address[] public donors;
     mapping(address => Library.Donation[]) private donations;
@@ -186,8 +187,7 @@ contract Campaign{
 
 
     function beneficiaryWithdraw() external isBeneficiary() campaignExpired(){
-        require(beneficiary_withdrawn[msg.sender]==false, "Error: already withdrawn");
-        require(beneficiaries_map[msg.sender].amount>0 || reports_number>0, "Error: there have been no donations for this beneficiary");
+        require(beneficiary_withdrawn[msg.sender]==false, "Error: already withdrawn");//Avoid reentrancy
 
         uint amount = beneficiaries_map[msg.sender].amount;
 
@@ -197,10 +197,14 @@ contract Campaign{
             plus = uint((reports_number*report_investment)/beneficiaries.length);
 
         beneficiary_withdrawn[msg.sender] = true; //consider beneficiary withdrawn before send ether to avoid reentrancy
-        (bool success, ) = msg.sender.call.value(amount+plus)("");
+        total_withdrawn += 1;
 
-        require(success==true, "Error: Withdraw transaction error");
-
+        uint total = amount+plus;
+        if(total > 0){
+            (bool success, ) = msg.sender.call.value(total)("");
+            require(success==true, "Error: Withdraw transaction error");
+        }
+        
         emit withdrawSuccess(amount, plus);
 
     }
@@ -274,6 +278,8 @@ contract Campaign{
 
     function getAllOrganizers() public view returns(address[] memory){return organizers;}
 
+    function organizerHaveDonated()public view isOrganizer() returns(bool) {return organizers_donation[msg.sender];}
+
     function getAllRewardsPrices() public view returns(uint[] memory){return rewards_prices;}
 
     function getBeneficiaryReward(address b)public view returns(uint){return beneficiaries_map[b].amount;}
@@ -281,6 +287,8 @@ contract Campaign{
     function beneficiaryHaveWithdrawn()public view isBeneficiary() returns(bool){return beneficiary_withdrawn[msg.sender];}
 
     function userHaveReported()public view returns(bool){return fraud_reporters[msg.sender];}
+
+    function userHaveBeenRefunded()public view returns(bool){return user_refunded[msg.sender];}
 
     function getUserDonation()public view returns(uint[] memory){
         Library.Donation[] memory user_donations = donations[msg.sender];
@@ -300,13 +308,6 @@ contract Campaign{
             rewards[i] = user_rewards[i].max_reward_index;
             
         return rewards;
-    }
-
-    function organizerHaveDonated()public view isOrganizer() returns(bool) {
-        if(organizers_donation[msg.sender])
-            return true;
-        else
-            return false;
     }
 
 

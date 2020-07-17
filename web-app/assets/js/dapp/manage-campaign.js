@@ -42,14 +42,21 @@ function setCampaignInfo(info){
                 total_raised += parseFloat(Web3.utils.fromWei(blockchain_data.beneficiaries_rewards[i], 'ether'))
                 
 
+            
+            state_index = blockchain_data.state.toNumber();
+
             var now = Math.floor(Date.now() / 1000)
-            if(blockchain_data.end_date.toNumber()<now){
-                if(isBeneficiary())
-                    $("#ben-wit").show()
+            if(blockchain_data.end_date.toNumber()<now && (state_index==1 || state_index==2)){
                 state_index = 2
-            }else{
-                state_index = blockchain_data.state.toNumber();
+                if(isBeneficiary() && blockchain_data.beneficiary_withdrawn==false)
+                    $("#ben-wit").show()
             }
+
+            if(blockchain_data.withdrawn_number == blockchain_data.beneficiaries.length && state_index!=3){
+                state_index = 2
+                $("#btn-close").show()
+            }
+
             var end_date = new Date(blockchain_data.end_date.toString()*1000);
             end_date = end_date.getFullYear() + "/" + end_date.getMonth() + "/" + end_date.getDate()+ " "+end_date.getHours()+ ":" +end_date.getMinutes()  
 
@@ -93,6 +100,10 @@ function setCampaignInfo(info){
                 $("#donate_btn").html("DONATE")
                 $("#donate_btn").show()
                 $("#rep_btn").show()
+            }
+
+            if(state_index==4){
+                $("#ben-fra").show()
             }
 
             $("#operations").show()
@@ -242,27 +253,26 @@ function makeDonation(){
             return
         }
     }
-    
 
-    if(state_index==0)
-        App.startCampaign(campaign_address, beneficiary, partition, email, total_donation, donationSuccess_callback)
-    if(state_index==1)
-        App.makeDonation(campaign_address, beneficiary, partition, email, total_donation, donationSuccess_callback)
-}
-
-
-
-function donationSuccess_callback(tx){
-    if(tx.logs[0].event == "donationSuccess" || tx.logs[1].event == "donationSuccess"){
-        var msg = "Donation made successfully!"
-        if(tx.logs[0].event == "donationRewardUnlocked")
-            msg += " You have unlocked some rewards!"
-        alert(msg) 
-        location.reload()
+    var callback = function(tx){
+        if(tx.logs[0].event == "donationSuccess" || tx.logs[1].event == "donationSuccess"){
+            var msg = "Donation made successfully!"
+            if(tx.logs[0].event == "donationRewardUnlocked")
+                msg += " You have unlocked some rewards!"
+            alert(msg) 
+            location.reload()
+        }
+        else
+            alert("Something went wrong...")
     }
-    else
-        alert("Something went wrong...")
+    
+    if(state_index==0)
+        App.startCampaign(campaign_address, beneficiary, partition, email, total_donation, callback)
+    if(state_index==1)
+        App.makeDonation(campaign_address, beneficiary, partition, email, total_donation, callback)
 }
+
+
 
 function closeAllOptions(){
     $("#check").hide()
@@ -319,54 +329,91 @@ function showReport(){
     $("#report_div").show()
 }
 
+
 function reportCampaign(){
     var conf = confirm("Do you want to report this campaign?");
-    if(conf)
-        App.reportCampaign(campaign_address, blockchain_data.report_investment.toString(), reportCallback)
+    if(conf){
+        var callback = function(tx){
+            if(tx.logs[0].event == "fraudReported"){
+                alert("Campaign reported successfully!") 
+                location.reload()
+            }
+            else
+                alert("Something went wrong...")
+        }
+        App.reportCampaign(campaign_address, blockchain_data.report_investment.toString(), callback)
+    }
 }
 
-function reportCallback(tx){
-    if(tx.logs[0].event == "fraudReported"){
-        alert("Campaign reported successfully!") 
-        location.reload()
-    }
-    else
-        alert("Something went wrong...")
-}
 
-
-
-function beneficiaryWithdraw(){
-    if(blockchain_data.beneficiary_withdrawn==true){
-        alert("You have already withdraw")
-        return
-    }
-    
+function beneficiaryWithdraw(){    
     var amount = null
     for(var i=0; i<blockchain_data.beneficiaries.length; i++){
         if(blockchain_data.beneficiaries[i].toLowerCase() == App.account)
             amount = blockchain_data.beneficiaries_rewards[i].toString()
     }
     
-    if(amount=="0" && blockchain_data.report_number.toNumber()==0){
-        alert("There have been no donations for you and there are no funds from fraud reports")
-        return
-    }else{
-        App.beneficiaryWithdraw(campaign_address, withdrawSuccess)
+    var callback = function(tx){
+        if(tx.logs[0].event == "withdrawSuccess"){
+            //var amount = Web3.utils.fromWei(blockchain_data.rewards_prices[i].toString(), 'ether') 
+            var reward = Web3.utils.fromWei(tx.logs[0].args.amount, 'ether')
+            var plus = Web3.utils.fromWei(tx.logs[0].args.plus, 'ether')
+            var total = parseFloat(reward) + parseFloat(plus);
+            var msg = "Withdraw carried out successfully! You have earned "+total+"ETH: "+reward+"ETH from donors and "+plus+"ETH from reports"
+            alert(msg)
+            location.reload();
+        }
+        else
+            alert("Something went wrong")
     }
+    App.beneficiaryWithdraw(campaign_address, callback)
 }
 
-function withdrawSuccess(tx){
-    if(tx.logs[0].event == "withdrawSuccess"){
-        //var amount = Web3.utils.fromWei(blockchain_data.rewards_prices[i].toString(), 'ether') 
-        var reward = Web3.utils.fromWei(tx.logs[0].args.amount, 'ether')
+
+function fraudWithdraw(){
+    var callback = function(tx){
+        var refound = Web3.utils.fromWei(tx.logs[0].args.amount, 'ether')
         var plus = Web3.utils.fromWei(tx.logs[0].args.plus, 'ether')
-        var total = parseFloat(reward) + parseFloat(plus);
-        var msg = "Withdraw carried out successfully! You have earned "+total+"ETH: "+reward+"ETH from donors and "+plus+"ETH from reports"
+        var total = parseFloat(refound) + parseFloat(plus);
+        var msg = "Refound carried out successfully! You have been refunded for "+total+"ETH"
+        if(plus!="0")
+            msg += ": "+refound+"ETH from donation and "+plus+"ETH as reporter gain and report investment refound"
         alert(msg)
-        location.reload();
+        location.reload()
     }
-    else
-        alert("Something went wrong")
+
+    var min_donations = 1
+    if(isOrganizer())
+        min_donations = 2
+    
+    if(blockchain_data.user_donations.length<min_donations && blockchain_data.user_reported==false){
+        alert("No refund available: you have not donated or reported this campaign")
+        return
+    }
+
+    if(blockchain_data.user_refunded==true){
+        alert("You have already been refunded")
+        return
+    }
+        
+
+    var conf = confirm("Do you want to refund?")
+    if(conf)
+        App.fraudWithdraw(campaign_address, callback)
 }
 
+
+
+function closeCampaign(){
+    var callback = function(tx){
+        if(tx.logs[0].event=="campainStatus" && tx.logs[0].args.s.toString()=="3"){
+            alert("Campaign closed successfully!")
+            location.reload()
+        }else
+            alert("Something went wrong...")
+    }
+    App.closeCampaign(campaign_address, callback)
+}
+
+
+window.ethereum.on('accountsChanged', function (accounts) {location.reload()})
