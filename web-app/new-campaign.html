@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->  
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->  
+<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->  
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="unititled">
+	<meta name="keywords" content="HTML5 Crowdfunding Profile Template">
+	<meta name="author" content="Audain Designs">
+	<link rel="shortcut icon" href="favicon.ico">  
+	<title>Launch - HTML5 Crowdfunding Profile Template</title>
+
+	<!-- Global jQuery -->
+	<script type="text/javascript" src="assets/js/jquery-1.12.3.min.js"></script>
+	<script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
+
+	<!-- Gobal CSS -->
+	<link href="assets/css/bootstrap.min.css" rel="stylesheet">
+	
+	<!-- Template CSS -->
+	<link href="assets/css/style.css" rel="stylesheet">
+	<link href="assets/css/style2.css" rel="stylesheet">
+
+	<!--Fonts-->
+	<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+	<!-- DAPP -->
+	<script src="https://unpkg.com/web3@1.2.9/dist/web3.min.js"></script>
+	<script type="text/javascript" src="assets/js/dapp/truffle-contract.min.js"></script>
+	<script src="assets/js/dapp/dapp.js"></script>
+	<script src="assets/js/dapp/create-campaign.js"></script>
+	
+</head>
+<body>
+	<!--header-->
+	<header class="header">
+		<div class="container">
+			<div class="row">
+				<div class="goal-summary pull-left">
+					<div class="time-left last">
+						<a href="index.html" style="text-decoration: none;"><h3>BitCollect</h3>
+						<span>A decentralized crawdfounding platform</span></a>
+					</div>
+				</div>
+				<div class="goal-summary pull-right">
+					<div class="reminder">
+						<a href="new-campaign.html"><i class="fa fa-star"></i> CREATE CAMPAIGN</a>
+					</div>
+					<div class="time-left last">
+						<h3 id="acc_eth">--</h3>
+						<span id="acc">--</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+	<!--/header-->
+	<!--main content-->
+	<div class="main-content">
+		<div class="container">
+			<div class="row">
+				<div class="content col-md-12 col-sm-12 col-xs-12">
+					<div class="section-block">
+						<div class="funding-meta">
+							<h1>NEW CAMPAIGN</h1><br>
+							<table class="table1">
+								<tr>
+									<td >Name*</td>
+									<td><input type="text" id="name" placeholder="Campaign name"></td>
+								</tr>
+								<tr>
+									<td>Organizers*</td>
+									<td>
+										<p style="display: inline;" id="org_list"></p>
+										<input type="text" id="org_name" placeholder="Organizer name"> 
+										<input type="text" id="org" placeholder="Organizer address"><button onclick="addOrganizer()">ADD</button>
+									</td>
+								</tr>
+								<tr>
+									<td>Beneficiaries*</td>
+									<td>
+										<p style="display: inline;" id="ben_list"></p>
+										<input type="text" id="ben_name" placeholder="Beneficiary name"> 
+										<input type="text" id="ben" placeholder="Beneficiary address"> 
+										<button onclick="addBeneficiary()">ADD</button>
+									</td>
+								</tr>
+								<tr>
+									<td>Description</td>
+									<td><input type="text" id="desc"></td>
+								</tr>
+								<tr>
+									<td>Image</td>
+									<td>
+										<input type="text" placeholder="Ex www.a.com/img.jpg" accept="image/x-png,image/jpeg" id="im1">
+									<br> 
+								</tr>
+								<tr>
+									<td>End Date*</td>
+									<td><input type="datetime-local" id="date"></td>
+								</tr>
+								<tr>
+									<tr>
+										<td>Donation rewards</td>
+										<td>
+											<p style="display: inline;" id="rew_list"></p>
+											<input type="text" id="rew" placeholder="Reward name">
+											<input type="number" placeholder="ETH price" id="rew_price" min="0" step="0.001">
+											<button onclick="addReward()">ADD</button>
+										</td>
+									</tr>
+								</tr>
+						
+							</table><br>
+							<div style="padding-left: 15px; font-size: 15pt;"> 
+								<button onclick="createCampaign()">SUBMIT</button><button style="margin-left: 15px;" onclick="location.reload()">RESET</button>
+							</div>
+					</div>
+		
+					
+					<!--tab panes-->
+					<div class="section-block">
+						<div class="tab-content">
+							<div role="tabpanel" class="tab-pane active" id="about">
+								<div class="about-information">
+									<h1 class="section-title">ABOUT BitCollect</h1>
+									<p>Suspendisse luctus at massa sit amet bibendum. Cras commodo congue urna, vel dictum velit bibendum eget. Vestibulum quis risus euismod, facilisis lorem nec, dapibus leo. Quisque sodales eget dolor iaculis dapibus. Vivamus sit amet lacus ipsum. Nullam varius lobortis neque, et efficitur lacus. Quisque dictum tellus nec mi luctus imperdiet. Morbi vel aliquet velit, accumsan dapibus urna. Cras ligula orci, suscipit id eros non, rhoncus efficitur nisi.</p>
+									<p>Quisque fermentum blandit ex at commodo. Nulla facilisi. Pellentesque porttitor nisi tellus, at gravida mi interdum et. Nulla vestibulum imperdiet libero eget mattis. Vestibulum porttitor, nibh quis sagittis tincidunt, velit orci molestie magna, in congue tortor mauris sit amet eros. Nam dictum gravida tempus.</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--/tabs-->
+				<!--/main content-->
+			</div>
+		</div>
+	</div>
+	<footer class="footer">
+	<div class="container">
+			<div class="row">
+				<!--This template has been created under the Creative Commons Attribution 3.0 License. Please keep the attribution link below when using this template in your own project, thank you.-->
+				<span class="copyright">Created by <a href="http://themes.audaindesigns.com" target="_blank">Audain Designs</a> for free use</span>
+			</div>
+		</div>
+	</footer>
+	
+	<!-- Template JS -->
+	<script type="text/javascript" src="assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->  
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->  
+<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->  
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="unititled">
+	<meta name="keywords" content="HTML5 Crowdfunding Profile Template">
+	<meta name="author" content="Audain Designs">
+	<link rel="shortcut icon" href="favicon.ico">  
+	<title>Launch - HTML5 Crowdfunding Profile Template</title>
+
+	<!-- Gobal CSS -->
+	<link href="assets/css/bootstrap.min.css" rel="stylesheet">
+	
+	<!-- Template CSS -->
+	<link href="assets/css/style.css" rel="stylesheet">
+	<link href="assets/css/style2.css" rel="stylesheet">
+
+	<!--Fonts-->
+	<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+	<!-- Global jQuery -->
+	<script type="text/javascript" src="assets/js/jquery-1.12.3.min.js"></script>
+	<script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+	<!-- DAPP -->
+	<script src="https://unpkg.com/web3@1.2.9/dist/web3.min.js"></script>
+	<script type="text/javascript" src="assets/js/dapp/truffle-contract.min.js"></script>
+	<script src="assets/js/dapp/dapp.js"></script>
+	<script src="assets/js/dapp/manage-campaign.js"></script>
+	
+	<!--Google Analytics-->
+</head>
+<body>
+	<!--header-->
+	<header class="header">
+		<div class="container">
+			<div class="row">
+				<div class="goal-summary pull-left">
+					<div class="time-left last">
+						<a href="index.html" style="text-decoration: none;"><h3>BitCollect</h3>
+						<span>A decentralized crawdfounding platform</span></a>
+					</div>
+				</div>
+				<div class="goal-summary pull-right">
+					<div class="reminder">
+						<a href="new-campaign.html"><i class="fa fa-star"></i> CREATE CAMPAIGN</a>
+					</div>
+					<div class="time-left last">
+						<h3 id="acc_eth">--</h3>
+						<span id="acc">--</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+	<!--/header-->
+	<!--main content-->
+	<div class="main-content">
+		<div class="container">
+			<div class="row">
+				<div class="content col-md-8 col-sm-12 col-xs-12">
+					<div class="section-block">
+						<div class="funding-meta">
+							<h1 id="name">--</h1>
+							<div class="video-frame">
+								<center><img src="" id="img"  width="560" height="350"></center>
+							</div><br>
+							<p style="font-size: 13pt;" id="desc">--</p>
+							<h2 id="raised"></h2>							
+							<span class="contribution">raised</span><br>
+							<div>
+								<p id="user_info" style="display: inline;"></p>
+							</div>
+							
+						</div>
+						<span class="count-down">Campaign status: <strong><p style="display: inline;" id="state"></p></strong></span>
+						<span class="count-down">End Date: <strong><p style="display: inline;" id="end_dt"></p></strong></span>
+						<span class="count-down">Fraud Reports: <strong><p style="display: inline;" id="report"></p></strong></span>
+
+						<br>
+						<div id="operations" style="display: none;">
+							<button class="btn btn-launch" onclick="createDonation()" id="donate_btn" style="display: none; margin-top: 10px;"></button> 
+							<button class="btn btn-launch" style="margin-left: 10px; margin-top: 10px;" onclick="beneficiariesInfo()">MORE INFO</button> 
+							<button class="btn btn-launch" style="margin-left: 10px; margin-top: 10px;" onclick="infoChecksum()">CHECKSUM</button>
+							<button class="btn btn-launch" onclick="showReport()" id="rep_btn" style="background-color:  #F57138; margin-left: 10px; margin-top: 10px; display: none;">REPORT</button>
+							<button class="btn btn-launch" onclick="beneficiaryWithdraw()" id="ben-wit" style="background-color:  #F57138;margin-left: 10px; margin-top: 10px; display: none;">BENEFICIARY WITHDRAW</button> 
+							<button class="btn btn-launch" onclick="fraudWithdraw()" id="ben-fra" style="background-color:  #F57138;margin-left: 10px; margin-top: 10px; display: none;">FRAUD WITHDRAW</button> 
+							<button class="btn btn-launch" onclick="closeCampaign()" id="btn-close" style="background-color:  #F57138;margin-left: 10px; margin-top: 10px; display: none;">CLOSE CAMPAIGN</button> 
+
+						</div>
+						<div id="report_div" style="display: none;">
+							<p style="font-size: 13pt; color: black;"><br><strong>Report a campaign</strong><br>In order report this campaign you need to invest <strong id="inv-amount"></strong>
+							<br>
+							<center><button onclick="reportCampaign()">REPORT CAMPAIGN</button></center>
+							</p>
+						</div>
+						<div id="check" style="display: none;">
+							<p style="font-size: 13pt; color: black;"><br>During the creation of the campaign, some of the information are not saved on the blockchain for economical and ethical reasons.
+							Nevertheless, for this information a checksum is saved on the blockchain in order to provide reliability of information.
+							With this test, you can check if some of this information have been tampered since the creation of campaign
+							<table  class="table2">
+								<tr>
+									<td>Campaign name</td>
+									<td id="ch_name"></td>
+								</tr>
+								<tr>
+									<td>Beneficiaries names</td>
+									<td id="ch_ben"></td>
+								</tr>
+								<tr>
+									<td>Organizers names</td>
+									<td id="ch_org"></td>
+								</tr>
+								<tr>
+									<td>Campaign description</td>
+									<td id="ch_desc"></td>
+								</tr>
+								<tr>
+									<td>Rewards name</td>
+									<td id="ch_rew"></td>
+								</tr>
+								<tr>
+									<td>Image link</td>
+									<td id="ch_img"></td>
+								</tr>
+							</table>
+							</p>
+						</div>
+						<div id="ben_info" style="display: none;">
+							<p style="font-size: 13pt; color: black;"><br>Some information about beneficiaries and organizers</p>
+							<div id="ben_info_table">
+
+							</div>
+						</div>
+						<div id="donation" style="display: none;">
+							<p style="font-size: 13pt; color: black;"><br><strong>Make a donation</strong></p>
+							<p style="display: none;  color: black;" id="don_2">All organizers have to make a donation in order to start the campaign</p>
+							<div id="donation_table"></div>
+							<br>
+							<button onclick="makeDonation()">DONATE</button><br>
+							<P id='em2'>*The email address is needed only for as a contact to manage unlockd rewards<br>
+							You can omit this field if you don't unlock any reward</P>
+						</div>
+					</div>
+				</div>
+				<!--/tabs-->
+				<!--/main content-->
+				<!--sidebar-->
+				<div class="content col-md-4 col-sm-12 col-xs-12">
+					
+					<div class="section-block">
+						<h1 class="section-title">REWARDS</h1>
+						<p id="no-rew" style="display: none;">This campaign has no rewards</p>
+						<!--reward blocks-->
+						<div id="rew-list"></div>
+					
+						<!--/reward blocks-->
+					</div>
+					<div class="section-block">
+						<h1 class="section-title">Your Donations & Rewards</h1>
+						<p id="no-don" >You have no donation on this campaign</p>
+						<!--donations blocks-->
+						<div id="don-rew_list"></div>
+					
+						<!--/donations blocks-->
+					</div>
+					
+				</div>
+				<!--/sidebar-->
+			</div>
+		</div>
+	</div>
+	<footer class="footer">
+	<div class="container">
+			<div class="row">
+				<!--This template has been created under the Creative Commons Attribution 3.0 License. Please keep the attribution link below when using this template in your own project, thank you.-->
+				<span class="copyright">Created by <a href="http://themes.audaindesigns.com" target="_blank">Audain Designs</a> for free use</span>
+			</div>
+		</div>
+	</footer>
+	
+	<!-- Template JS -->
+	<script type="text/javascript" src="assets/js/main.js"></script>
+</body>
+</html>

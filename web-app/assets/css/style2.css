@@ -1,0 +1,19 @@
+.table1{
+    font-size: 15pt;
+}
+.table1 td{
+    padding-top: 20px;
+    padding-left: 10px;
+}
+
+.table2{
+    font-size: 13pt;
+}
+.table2 td {
+    padding-top: 20px;
+    padding-left: 5px;
+}
+.table2 th{
+    padding-top: 20px;
+    padding-left: 5px;
+}

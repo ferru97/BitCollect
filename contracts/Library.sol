@@ -17,8 +17,6 @@ library Library{
         uint amount;
         address[] donation_beneficiaries;
         uint[] danation_partitions;
-        DonationReward reward;
-        bool flag;
     }
 
     struct FraudReporter{
