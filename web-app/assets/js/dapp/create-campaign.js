@@ -8,9 +8,40 @@ var images = []
 var images_hash = []
 var doc = null;
 
+function validURL(str) {
+    var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+      '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+      '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+      '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+    return !!pattern.test(str);
+}
+
+
+function sortRewards(){
+    var list = [];
+    for (var j = 0; j < rewards_names.length; j++) 
+        list.push({'name': rewards_names[j], 'cost': rewards_costs[j]});
+
+    list.sort(function(a, b) {
+        return ((a.cost < b.cost) ? -1 : ((a.cost == b.cost) ? 0 : 1));
+    });
+
+    for (var k = 0; k < list.length; k++) {
+        rewards_names[k] = list[k].name;
+        rewards_costs[k] = list[k].cost;
+    }
+}
+
 function addOrganizer(){
     var org = $("#org").val()
     var org_name = $("#org_name").val()
+
+    if(!web3.utils.isAddress(org)){
+        alert("Insert a valid address")
+        return
+    }
 
     if (organizers_list.includes(org)){
         alert("Error: organizer already provided")
@@ -30,6 +61,12 @@ function addOrganizer(){
 function addBeneficiary(){
     var ben = $("#ben").val()
     var ben_name = $("#ben_name").val()
+
+    if(!web3.utils.isAddress(ben)){
+        alert("Insert a valid address")
+        return
+    }
+
     if (beneficiaries_list.includes(ben)){
         alert("Error: beneficiarie already provided")
         return
@@ -69,8 +106,23 @@ function createCampaign(){
         return
     }
 
+    if(image.length>0 && !validURL(image)){
+        alert("The image value need to be a valid URL")
+        return
+    }
+
     var timestamp_end = new Date(date)
-    timestamp_end = timestamp_end.getTime()/1000
+    timestamp_end = parseInt(timestamp_end.getTime()/1000)
+
+    var now = new Date()
+    now_timestamp = parseInt(now.getTime()/1000)
+
+    if(timestamp_end < now_timestamp){
+        alert("Insert a valid end date")
+        return
+    }
+
+    sortRewards()
 
     doc = null;
     doc={

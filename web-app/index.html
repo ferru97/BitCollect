@@ -49,7 +49,11 @@
 							if(row_count==0)
 								campaigns += "<tr>"
 
-							campaigns += '<td ><div style="margin-left:15px"><a href="campaign.html?addr='+data[i].addr+'"><img src="'+data[i].image_link+'" style="width: 280px; height: 180px; margin-top:25px;"><p style="margin-top:5px"><strong>'+data[i].name+'</strong></p></a></div></td>'
+							var image = data[i].image_link
+							if(image.length==0)
+									image = "assets/img/no-img.png"
+
+							campaigns += '<td ><div style="margin-left:15px"><a href="campaign.html?addr='+data[i].addr+'"><img src="'+image+'" style="width: 280px; height: 180px; margin-top:25px;"><p style="margin-top:5px"><strong>'+data[i].name+'</strong></p></a></div></td>'
 							
 							row_count++
 

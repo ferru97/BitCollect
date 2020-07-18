@@ -60,10 +60,13 @@ function setCampaignInfo(info){
             var end_date = new Date(blockchain_data.end_date.toString()*1000);
             end_date = end_date.getFullYear() + "/" + end_date.getMonth() + "/" + end_date.getDate()+ " "+end_date.getHours()+ ":" +end_date.getMinutes()  
 
+            var image = db_data.image_link
+            if(image.length==0)
+                    image = "assets/img/no-img.png"
+
             $("#name").text(db_data.name);
             $("#desc").html("<strong>Campaign Description</strong><br>"+db_data.description);
-            if(db_data.image_link.length>0)
-                $("#img").attr("src",db_data.image_link);
+            $("#img").attr("src",image);
             $("#raised").text(total_raised+" ETH")
             $("#end_dt").text(end_date)
             $("#state").text(State[state_index])
