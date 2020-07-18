@@ -26,7 +26,18 @@ app.post('/api/get-campaign', (req, res) => {
         res.write(JSON.stringify(result));
         res.end()
       }
+    
     Mongo.getCampaign(req.body.address, callback)  
+});
+
+app.get('/api/all-campaigns', (req, res) => {
+    console.log("Get all campaigns ")
+
+    var callback = (result)=>{
+        res.write(JSON.stringify(result));
+        res.end()
+      }
+    Mongo.getAllCampaigns(callback)  
 });
 
 app.listen(3005, () => console.log('Gator app listening on port 3005!'));

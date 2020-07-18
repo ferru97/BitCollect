@@ -31,6 +31,7 @@ App = {
         web3.eth.getCoinbase(async function(err, account) {
             if(err == null) {
                 App.account = account;
+                console.log(App.account)
                 balance = await web3.eth.getBalance(account);
                 $("#acc_eth").html("ETH "+web3.utils.fromWei(balance, 'ether'));
                 $("#acc").html("Account: <a style='cursor:pointer; color:black' onclick='alert(\""+account+"\")'>click to view</a>");

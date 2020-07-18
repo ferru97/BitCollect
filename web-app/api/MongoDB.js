@@ -33,7 +33,18 @@ async function getCampaign(address, callback){
 }
 
 
+async function getAllCampaigns(callback){
+
+    var fields = { addr: 1, name: 1, image_link: 1}
+    await campaigns.find({}, fields).toArray(function(err, array){
+        array.reverse()
+        callback(array)
+    });
+}
+
+
 module.exports = {
     addCampaign: addCampaign,
-    getCampaign: getCampaign
+    getCampaign: getCampaign,
+    getAllCampaigns: getAllCampaigns
 }

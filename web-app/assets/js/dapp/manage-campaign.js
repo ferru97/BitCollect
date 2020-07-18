@@ -41,7 +41,7 @@ function setCampaignInfo(info){
             for(var i=0; i<blockchain_data.beneficiaries_rewards.length; i++)
                 total_raised += parseFloat(Web3.utils.fromWei(blockchain_data.beneficiaries_rewards[i], 'ether'))
                 
-
+            setUserType()
             
             state_index = blockchain_data.state.toNumber();
 
@@ -81,14 +81,6 @@ function setCampaignInfo(info){
             else
                 $("#rew-list").html(rewards)
 
-            if(isOrganizer()){
-                $("#is-org").css("display","inline")
-                $("#don_2").show()
-            }
-
-            if(isBeneficiary()){
-                $("#is-ben").show()
-            }
                
             if(isOrganizer() && state_index==0){
                 $("#donate_btn").html("START CAMPAIGN")
@@ -134,6 +126,28 @@ function isBeneficiary(){
             isBeneficiary = true
     }
     return isBeneficiary
+}
+
+function setUserType(){
+    var msg = ""
+    if(isOrganizer()){
+        $("#don_2").show()
+        msg += "You are an organizer of this campaign!"
+    }
+
+    if(isBeneficiary()){
+        if(msg.length>0)
+            msg += "<br>"
+        msg += "You are a beneficiary of this campaign!"
+    }
+        
+    if(blockchain_data.user_reported==true){
+        if(msg.length>0)
+            msg += "<br>"
+        msg += "You have reported this campaign!"
+    }    
+    
+    $("#user_info").html(msg)
 }
 
 

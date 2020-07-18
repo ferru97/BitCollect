@@ -27,24 +27,46 @@
 	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
 
 	<!-- DAPP -->
-	<script src="https://unpkg.com/web3@latest/dist/web3.min.js"></script>
+	<script src="https://unpkg.com/web3@1.2.9/dist/web3.min.js"></script>
 	<script type="text/javascript" src="assets/js/dapp/truffle-contract.min.js"></script>
 	<script src="assets/js/dapp/dapp.js"></script>
 
 	<script>
-		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-		ga('create', 'UA-12345678-9', 'auto');
-		ga('send', 'pageview');
-
-	</script>
-	<script>
 		$(function() {
 			$(window).on('load',function () {
 				App.init();
+				$.ajax({
+					type: "GET",  
+					url: "http://localhost:3005/api/all-campaigns",
+					dataType: "json",
+					success: function(data){  
+						console.log(data)
+						var campaigns = ""
+						const max_in_row = 3
+						var row_count = 0
+
+						for(var i=0; i<data.length; i++){
+							if(row_count==0)
+								campaigns += "<tr>"
+
+							campaigns += '<td ><div style="margin-left:15px"><a href="campaign.html?addr='+data[i].addr+'"><img src="'+data[i].image_link+'" style="width: 280px; height: 180px; margin-top:25px;"><p style="margin-top:5px"><strong>'+data[i].name+'</strong></p></a></div></td>'
+							
+							row_count++
+
+							if(row_count==3){
+								campaigns += "</tr>"
+								row_count = 0
+							}
+								
+						}
+
+						$("#table_list").html(campaigns)
+						
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown) { 
+						alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+					}       
+				});
 			});
 		});
 
@@ -57,8 +79,8 @@
 			<div class="row">
 				<div class="goal-summary pull-left">
 					<div class="time-left last">
-						<h3>BitCollect</h3>
-						<span>A decentralized crawdfounding platform</span>
+						<a href="index.html" style="text-decoration: none;"><h3>BitCollect</h3>
+						<span>A decentralized crawdfounding platform</span></a>
 					</div>
 				</div>
 				<div class="goal-summary pull-right">
@@ -79,15 +101,10 @@
 		<div class="container">
 			<div class="row">
 				<div class="content col-md-12 col-sm-12 col-xs-12">
-					<div class="section-block">
+					<div class="section-block" >
 						<div class="funding-meta">
 							<h1>AVAILABLE CAMPAIGNS</h1><br>
-							<table>
-								<tr>
-									<td style="padding-left: 70px;"><img src="https://bitecoin.it/up/2018/10/eth1.png" style="width: 200px; height: 150px"><p>CAMPAIGN 1</p></td>
-									<td style="padding-left: 70px;"><img src="https://bitecoin.it/up/2018/10/eth1.png" style="width: 200px; height: 150px"><p>CAMPAIGN 1</p></td>
-									<td style="padding-left: 70px;"><img src="https://bitecoin.it/up/2018/10/eth1.png" style="width: 200px; height: 150px;"><p>CAMPAIGN 1</p></td>
-								</tr>
+							<table id="table_list" style=" margin: auto;width: 50%;padding: 10px;">
 							</table>
 					</div>
 		
