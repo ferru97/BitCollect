@@ -21,7 +21,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "lite-server",
-    "dev-api": "node web-app/api/manage.js"
+    "dev-api": "node web-app/api/manage.js",
+    "gas-cost": "node Gas-Estimation/gas_estimation.js"
   },
   "repository": {
     "type": "git",

@@ -90,7 +90,7 @@ contract Campaign{
     }
 
     constructor(address[] memory _organizers, address payable[] memory _beneficiaries, uint _end_date,
-    uint[] memory rewards_costs, uint fraudThreshold, string memory campaign_info_hashes, uint _report_investment) public {
+    uint[] memory _rewards_costs, uint _fraudThreshold, string memory _campaign_info_hashes, uint _report_investment) public {
 
         for(uint i = 0; i < _organizers.length; i++) {
             organizers.push(_organizers[i]);
@@ -104,12 +104,12 @@ contract Campaign{
         }
 
         campaign_end_timestamp = _end_date;
-        rewards_prices = rewards_costs;
-        info_hashes = campaign_info_hashes;
+        rewards_prices = _rewards_costs;
+        info_hashes = _campaign_info_hashes;
 
         state = State.PENDING;
 
-        thresholdFraud = fraudThreshold;
+        thresholdFraud = _fraudThreshold;
         report_investment = _report_investment;
         initial_donation_amount = 0;
 
@@ -143,8 +143,14 @@ contract Campaign{
 
     function makeDonation(address[] memory to, uint[] memory wei_partition, string memory contact_email)public payable
      campaignNotEnded() beneficiariesExist(to){
+
+        bool is_organizer = false;
+        for(uint i = 0; i<organizers.length; i++){
+            if(organizers[i]==msg.sender)
+                is_organizer = true;
+        }
          
-        require(state==State.RUNNING || (state==State.PENDING && organizers_donation[msg.sender]==false),
+        require(state==State.RUNNING || (state==State.PENDING && is_organizer && organizers_donation[msg.sender]==false),
                 "Error: The campaign is not started or you're not an organizer to start it");
         require(msg.value>0, "Error: 0 wei provided");
         require(to.length==wei_partition.length, "Error: destinators size is different from the wei's partition size");
@@ -218,16 +224,6 @@ contract Campaign{
     }
 
 
-    function getDonationReward() external view returns(uint[] memory){
-        Library.DonationReward[] memory user_donations_rewards = donations_rewards[msg.sender];
-        uint[] memory rewards = new uint[](user_donations_rewards.length);
-
-        for(uint i = 0; i<user_donations_rewards.length; i++)
-            rewards[i] = user_donations_rewards[i].max_reward_index;
-
-        return rewards;
-    }
-
     function reportFraud() external payable requireState(State.RUNNING){
         require(fraud_reporters[msg.sender]==false, "Error: You have already reported this campaign");
         require(msg.value==report_investment, "Error: You need to invest some ether to report a fraud");
@@ -289,6 +285,16 @@ contract Campaign{
     function userHaveReported()public view returns(bool){return fraud_reporters[msg.sender];}
 
     function userHaveBeenRefunded()public view returns(bool){return user_refunded[msg.sender];}
+
+    function getDonationReward() external view returns(uint[] memory){
+        Library.DonationReward[] memory user_donations_rewards = donations_rewards[msg.sender];
+        uint[] memory rewards = new uint[](user_donations_rewards.length);
+
+        for(uint i = 0; i<user_donations_rewards.length; i++)
+            rewards[i] = user_donations_rewards[i].max_reward_index;
+
+        return rewards;
+    }
 
     function getUserDonation()public view returns(uint[] memory){
         Library.Donation[] memory user_donations = donations[msg.sender];
