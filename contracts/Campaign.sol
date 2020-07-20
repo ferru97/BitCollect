@@ -1,6 +1,7 @@
-pragma solidity >=0.4.21 <0.7.0;
+pragma solidity >=0.6.0 <0.7.0;
 
 import "./Library.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 
 contract Campaign{
 
@@ -9,6 +10,7 @@ contract Campaign{
     using Library for Library.DonationReward;
     using Library for Library.FraudReporter;
 
+    using SafeMath for uint256;
 
     enum State {PENDING, RUNNING, EXPIRED, DEACTIVATED, BLOCKED}
     State public state;
@@ -130,7 +132,7 @@ contract Campaign{
                 organizers_donors++;
         }
 
-        initial_donation_amount += msg.value;
+        initial_donation_amount = initial_donation_amount.add(msg.value);
 
         if(organizers_donors==organizers.length)
             state = State.RUNNING;
@@ -157,7 +159,7 @@ contract Campaign{
         
         uint total_donation = 0;
         for(uint i = 0; i<wei_partition.length; i++){
-            total_donation += wei_partition[i];
+            total_donation = total_donation.add(wei_partition[i]);
         }
         require(msg.value==total_donation,"Error: Total povided weis are different from the provided weis partitions");
         
@@ -200,12 +202,12 @@ contract Campaign{
         //Subdivide ether from reporters(if exist) to all beneficiaries
         uint plus = 0;
         if (reports_number > 0)
-            plus = uint((reports_number*report_investment)/beneficiaries.length);
+            plus = reports_number.mul(report_investment).div(beneficiaries.length);
 
         beneficiary_withdrawn[msg.sender] = true; //consider beneficiary withdrawn before send ether to avoid reentrancy
         total_withdrawn += 1;
 
-        uint total = amount+plus;
+        uint total = amount.add(plus);
         if(total > 0){
             (bool success, ) = msg.sender.call.value(total)("");
             require(success==true, "Error: Withdraw transaction error");
@@ -251,13 +253,13 @@ contract Campaign{
         uint amount = 0;
         Library.Donation[] memory user_donation = donations[msg.sender];
         while(index < user_donation.length){
-            amount += user_donation[index].amount;
+            amount = amount.add(user_donation[index].amount);
             index++;
         }
 
         uint plus = 0;
         if(fraud_reporters[msg.sender]==true)//If the sender is a reporter
-            plus = uint(initial_donation_amount / reports_number) + report_investment;
+            plus = initial_donation_amount.div(reports_number).add(report_investment);
 
 
         user_refunded[msg.sender] = true; //to avoid reentrancy

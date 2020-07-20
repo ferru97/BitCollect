@@ -72,7 +72,6 @@ contract("BitCollect Test", async accounts => {
 
     });
 
-
     it("Campaign reported but not declared fraudolent", async () => {
         var end_date = Math.floor(Date.now() / 1000) + 10 //Test campaign lasts 5 seconds
         let instance = await BitCollect.deployed()
@@ -131,6 +130,6 @@ contract("BitCollect Test", async accounts => {
         truffleAssert.eventEmitted(deactivate, 'campainStatus', (ev) => {return ev.s == State["DEACTIVATED"]})
 
     });
-  
+
 
   });

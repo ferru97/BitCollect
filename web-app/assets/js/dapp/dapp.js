@@ -52,20 +52,6 @@ App = {
         });
     },
 
-    /*listenForEvents: function() { 
-        App.contracts["BitCollect"].deployed().then(async (instance) => {
-            console.log("dEPLOYED");
-        });
-        return App.render(); },
-
-    render: function() {
-        App.contracts["BitCollect"].deployed().then(async(instance) =>{
-            // Call the value function (value is a public attribute)
-            console.log("rENDERED");
-        });
-           
-    },*/
-
     createCampaign: function(organizers_list, beneficiaries_list, timestamp_end, rewards_costs, info_hashes, callback){
         App.contracts["BitCollect"].deployed().then(async(instance) =>{
             try{
@@ -203,7 +189,3 @@ App = {
         });
     },
 }
-
-window.ethereum.on('accountsChanged', function (accounts) {
-    //App.init()
-  })

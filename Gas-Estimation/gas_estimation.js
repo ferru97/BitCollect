@@ -52,12 +52,15 @@ async function EstimateGas(){
     });
     await Bitcollect_instance.methods.createCampaign([accounts[1],accounts[2]], [accounts[1]], end_date, [], checksum)
     .estimateGas({from : accounts[0]}, function(error, gasAmount){
-        console.log("\t+Adding an organizer costs an extra "+gestCost(gasAmount - main_consuption))
+        console.log("\t+Adding an organizer costs: "+gestCost(gasAmount - main_consuption))
     });
-
     await Bitcollect_instance.methods.createCampaign([accounts[1],accounts[2]], [accounts[1]], end_date, [], checksum)
     .estimateGas({from : accounts[0]}, function(error, gasAmount){
-        console.log("\t+Adding a beneficiary costs an extra "+gestCost(gasAmount - main_consuption))
+        console.log("\t+Adding a beneficiary costs: "+gestCost(gasAmount - main_consuption))
+    });
+    await Bitcollect_instance.methods.createCampaign([accounts[1]], [accounts[1]], end_date, [pointO_wei], checksum)
+    .estimateGas({from : accounts[0]}, function(error, gasAmount){
+        console.log("\t+Adding a reward price costs: "+gestCost(gasAmount - main_consuption))
     });
 
     await Bitcollect_instance.methods.setFraudThreshold(5).estimateGas({from : accounts[4]}, async function(error, gasAmount){
@@ -92,6 +95,7 @@ async function EstimateGas(){
     main_consuption = null
     await Campaign_instance.methods.makeDonation([accounts[1]], [1000], "").estimateGas({from : accounts[1], value:1000}, function(error, gasAmount){
         console.log("\nMake donation to 1 beneficiary: "+gestCost(gasAmount))
+        main_consuption = gasAmount
     });
     await Campaign_instance.methods.makeDonation([accounts[1]], [1000], "").send({from:accounts[1], value:1000, gasPrice: gas_price, gas: max_gas})
 
@@ -106,14 +110,14 @@ async function EstimateGas(){
     sleep.sleep(10)
 
     await Campaign_instance.methods.beneficiaryWithdraw().estimateGas({from : accounts[1]}, function(error, gasAmount){
-        console.log("\nBeneficiary withdraw: "+gestCost(gasAmount-main_consuption))
+        console.log("\nBeneficiary withdraw: "+gestCost(gasAmount))
     });
     await Campaign_instance.methods.beneficiaryWithdraw().send({from:accounts[1], gasPrice: gas_price, gas: max_gas})
     await Campaign_instance.methods.beneficiaryWithdraw().send({from:accounts[2], gasPrice: gas_price, gas: max_gas})
 
     //Cost campaign deactivation
     await Campaign_instance.methods.deactivateCampaign().estimateGas({from : accounts[2]}, function(error, gasAmount){
-        console.log("\nDeactivate campaign: "+gestCost(gasAmount-main_consuption))
+        console.log("\nDeactivate campaign: "+gestCost(gasAmount))
     });
 
 
@@ -135,20 +139,20 @@ async function EstimateGas(){
     await Campaign_instance.methods.makeDonation([accounts[1]], [1000], "").send({from:accounts[4], value:1000, gasPrice: gas_price, gas: max_gas})
 
     await Campaign_instance.methods.reportFraud().estimateGas({from : accounts[5], value:pointO_wei}, function(error, gasAmount){
-        console.log("Report campaign: "+gestCost(gasAmount-main_consuption))
+        console.log("Report campaign: "+gestCost(gasAmount))
     });
     await Campaign_instance.methods.reportFraud().send({from:accounts[4], value:pointO_wei, gasPrice: gas_price, gas: max_gas})
     await Campaign_instance.methods.reportFraud().send({from:accounts[5], value:pointO_wei, gasPrice: gas_price, gas: max_gas})
 
-    console.log("Campaign blocked, refund users")
+    console.log("\nCampaign blocked, refund users")
     await Campaign_instance.methods.fraudWithdraw().estimateGas({from : accounts[3], value:pointO_wei}, function(error, gasAmount){
-        console.log("\tRefund user with 1 donation: "+gestCost(gasAmount-main_consuption))
+        console.log("\tRefund user with 1 donation: "+gestCost(gasAmount))
     }); 
     await Campaign_instance.methods.fraudWithdraw().estimateGas({from : accounts[4], value:pointO_wei}, function(error, gasAmount){
-        console.log("\tRefund user reporter with 1 donation: "+gestCost(gasAmount-main_consuption))
+        console.log("\tRefund user reporter with 1 donation: "+gestCost(gasAmount))
     });
     await Campaign_instance.methods.fraudWithdraw().estimateGas({from : accounts[5], value:pointO_wei}, function(error, gasAmount){
-        console.log("\tRefund user only reporter: "+gestCost(gasAmount-main_consuption))
+        console.log("\tRefund user only reporter: "+gestCost(gasAmount))
     });
 
 
