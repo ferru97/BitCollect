@@ -80,29 +80,29 @@ async function EstimateGas(){
     }).send({from: accounts[4], gasPrice: gas_price, gas: max_gas});
 
     main_consuption = null
-    await Campaign_instance.methods.startCampaign([accounts[1]], [pointO_wei], "").estimateGas({from:accounts[2], value:pointO_wei}, function(error, gasAmount){
+    await Campaign_instance.methods.startCampaign([accounts[1]], [pointO_wei]).estimateGas({from:accounts[2], value:pointO_wei}, function(error, gasAmount){
         console.log("Start campaign donating to 1 beneficiary: "+gestCost(gasAmount))
         main_consuption = gasAmount
     })
-    await Campaign_instance.methods.startCampaign([accounts[1]], [pointO_wei], "").send({from:accounts[2], value:pointO_wei, gasPrice: gas_price, gas: max_gas})
+    await Campaign_instance.methods.startCampaign([accounts[1]], [pointO_wei]).send({from:accounts[2], value:pointO_wei, gasPrice: gas_price, gas: max_gas})
     
-    await Campaign_instance.methods.startCampaign([accounts[1], accounts[2]], [pointO_wei, pointO_wei], "").estimateGas({from:accounts[3], value:tw_pointO_wei}, function(error, gasAmount){
+    await Campaign_instance.methods.startCampaign([accounts[1], accounts[2]], [pointO_wei, pointO_wei]).estimateGas({from:accounts[3], value:tw_pointO_wei}, function(error, gasAmount){
         console.log("\t+Adding 1 beneficiary to start campaign: "+gestCost(gasAmount-main_consuption))
     })
-    await Campaign_instance.methods.startCampaign([accounts[1], accounts[2]], [pointO_wei, pointO_wei], "").send({from:accounts[3], value:pointO_wei*2, gasPrice: gas_price, gas: max_gas})
+    await Campaign_instance.methods.startCampaign([accounts[1], accounts[2]], [pointO_wei, pointO_wei]).send({from:accounts[3], value:pointO_wei*2, gasPrice: gas_price, gas: max_gas})
 
     
     main_consuption = null
-    await Campaign_instance.methods.makeDonation([accounts[1]], [1000], "").estimateGas({from : accounts[1], value:1000}, function(error, gasAmount){
+    await Campaign_instance.methods.makeDonation([accounts[1]], [1000]).estimateGas({from : accounts[1], value:1000}, function(error, gasAmount){
         console.log("\nMake donation to 1 beneficiary: "+gestCost(gasAmount))
         main_consuption = gasAmount
     });
-    await Campaign_instance.methods.makeDonation([accounts[1]], [1000], "").send({from:accounts[1], value:1000, gasPrice: gas_price, gas: max_gas})
+    await Campaign_instance.methods.makeDonation([accounts[1]], [1000]).send({from:accounts[1], value:1000, gasPrice: gas_price, gas: max_gas})
 
-    await Campaign_instance.methods.makeDonation([accounts[1],accounts[2]], [1000,1000], "").estimateGas({from : accounts[4], value:2000}, function(error, gasAmount){
+    await Campaign_instance.methods.makeDonation([accounts[1],accounts[2]], [1000,1000]).estimateGas({from : accounts[4], value:2000}, function(error, gasAmount){
         console.log("\t+Add 1 beneficiary to the donation: "+gestCost(gasAmount-main_consuption))
     });
-    await Campaign_instance.methods.makeDonation([accounts[1]], [10000], "").estimateGas({from : accounts[5], value:10000}, function(error, gasAmount){
+    await Campaign_instance.methods.makeDonation([accounts[1]], [10000]).estimateGas({from : accounts[5], value:10000}, function(error, gasAmount){
         console.log("\t+Unlock 1 reward with the danation: "+gestCost(gasAmount-main_consuption))
     });
 
@@ -131,12 +131,12 @@ async function EstimateGas(){
     }).send({from: accounts[4], gasPrice: gas_price, gas: max_gas});
 
     //Start campaign
-    await Campaign_instance.methods.startCampaign([accounts[1]], [pointO_wei], "").send({from:accounts[2], value:pointO_wei, gasPrice: gas_price, gas: max_gas})
-    await Campaign_instance.methods.startCampaign([accounts[1], accounts[2]], [pointO_wei, pointO_wei], "").send({from:accounts[3], value:pointO_wei*2, gasPrice: gas_price, gas: max_gas})
+    await Campaign_instance.methods.startCampaign([accounts[1]], [pointO_wei]).send({from:accounts[2], value:pointO_wei, gasPrice: gas_price, gas: max_gas})
+    await Campaign_instance.methods.startCampaign([accounts[1], accounts[2]], [pointO_wei, pointO_wei]).send({from:accounts[3], value:pointO_wei*2, gasPrice: gas_price, gas: max_gas})
 
     //Make some donations
-    await Campaign_instance.methods.makeDonation([accounts[1]], [1000], "").send({from:accounts[3], value:1000, gasPrice: gas_price, gas: max_gas})
-    await Campaign_instance.methods.makeDonation([accounts[1]], [1000], "").send({from:accounts[4], value:1000, gasPrice: gas_price, gas: max_gas})
+    await Campaign_instance.methods.makeDonation([accounts[1]], [1000]).send({from:accounts[3], value:1000, gasPrice: gas_price, gas: max_gas})
+    await Campaign_instance.methods.makeDonation([accounts[1]], [1000]).send({from:accounts[4], value:1000, gasPrice: gas_price, gas: max_gas})
 
     await Campaign_instance.methods.reportFraud().estimateGas({from : accounts[5], value:pointO_wei}, function(error, gasAmount){
         console.log("Report campaign: "+gestCost(gasAmount))

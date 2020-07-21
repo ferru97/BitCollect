@@ -118,10 +118,10 @@ contract Campaign{
         emit campainStatus(state);
     }
 
-    function startCampaign(address[] calldata to, uint[] calldata wei_partition, string calldata contact_email)
+    function startCampaign(address[] calldata to, uint[] calldata wei_partition)
      campaignNotEnded() external payable isOrganizer() beneficiariesExist(to) requireState(State.PENDING){//RQ-PARAMS
         
-        makeDonation(to, wei_partition, contact_email);
+        makeDonation(to, wei_partition);
 
         if(organizers_donation[msg.sender] == false)
             organizers_donation[msg.sender] = true;
@@ -143,7 +143,7 @@ contract Campaign{
     }
 
 
-    function makeDonation(address[] memory to, uint[] memory wei_partition, string memory contact_email)public payable
+    function makeDonation(address[] memory to, uint[] memory wei_partition)public payable
      campaignNotEnded() beneficiariesExist(to){
 
         bool is_organizer = false;
@@ -180,7 +180,6 @@ contract Campaign{
 
             reward.max_reward_index = i - 1;
             reward.donation_index = donations[msg.sender].length - 1;
-            reward.email_contact = contact_email;
 
             donations_rewards[msg.sender].push(reward);
 

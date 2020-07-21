@@ -117,10 +117,10 @@ App = {
         });
     },
 
-    startCampaign: function(campaign_addr, beneficiaries, partitions, email, val, callback){
+    startCampaign: function(campaign_addr, beneficiaries, partitions, val, callback){
         App.contracts["Campaign"].at(campaign_addr).then(async(instance) =>{
             try{
-                var tx_donation = await instance.startCampaign(beneficiaries, partitions, email, {from: App.account, value:val});
+                var tx_donation = await instance.startCampaign(beneficiaries, partitions, {from: App.account, value:val});
                 callback(tx_donation);
             }catch(err){
                 alert("Something went wrong ...")
@@ -129,10 +129,10 @@ App = {
         });
     },
 
-    makeDonation: function(campaign_addr, beneficiaries, partitions, email, val, callback){
+    makeDonation: function(campaign_addr, beneficiaries, partitions, val, callback){
         App.contracts["Campaign"].at(campaign_addr).then(async(instance) =>{
             try{
-                var tx_donation = await instance.makeDonation(beneficiaries, partitions, email, {from: App.account, value:val});
+                var tx_donation = await instance.makeDonation(beneficiaries, partitions, {from: App.account, value:val});
                 callback(tx_donation);
             }catch(err){
                 alert("Something went wrong ...")
