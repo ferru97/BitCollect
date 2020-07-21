@@ -166,31 +166,37 @@ function infoChecksum(){
         $("#ch_name").html(good)
     else
         $("#ch_name").html(bad)
+    $("#ch_name_md5").html(md5s[0])
     
     if(CryptoJS.MD5(db_data.organizers_names.join()) == md5s[1])
         $("#ch_org").html(good)
     else
         $("#ch_org").html(bad)
+    $("#ch_org_md5").html(md5s[1])
 
     if(CryptoJS.MD5(db_data.bneficiaries_names.join()) == md5s[2])
         $("#ch_ben").html(good)
     else
         $("#ch_ben").html(bad)
+    $("#ch_ben_md5").html(md5s[2])
     
     if(CryptoJS.MD5(db_data.description) == md5s[3])
         $("#ch_desc").html(good)
     else
         $("#ch_desc").html(bad)
+    $("#ch_desc_md5").html(md5s[3])
 
     if(CryptoJS.MD5(db_data.rewards_name.join()) == md5s[4])
         $("#ch_rew").html(good)
     else
         $("#ch_rew").html(bad)
+    $("#ch_rew_md5").html(md5s[4])
 
     if(CryptoJS.MD5(db_data.image_link) == md5s[5])
         $("#ch_img").html(good)
     else
         $("#ch_img").html(bad)
+    $("#ch_img_md5").html(md5s[5])
 }
 
 
