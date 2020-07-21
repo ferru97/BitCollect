@@ -60,7 +60,7 @@ contract("BitCollect Test", async accounts => {
         let report_2 = await campaign_instance.reportFraud({from: accounts[7], value:fraud_investment})//reporter
         truffleAssert.eventEmitted(report_2, 'fraudReported', (ev) => {return ev.s == State["BLOCKED"]})
 
-        //Execute make some reports
+        //Execute refund
         let withdraw_1 = await campaign_instance.fraudWithdraw({from: accounts[5]}) //test withdraw donor&reporter
         truffleAssert.eventEmitted(withdraw_1, 'refoundEmitted', (ev) => {return ev.amount == 4000 && ev.plus == "50000000000002500"}) //"50000000000002500" = fraud_investment + subdivision of organizer initial donation  (3000+2000)/2
 
@@ -73,7 +73,7 @@ contract("BitCollect Test", async accounts => {
     });
 
     it("Campaign reported but not declared fraudolent", async () => {
-        var end_date = Math.floor(Date.now() / 1000) + 10 //Test campaign lasts 5 seconds
+        var end_date = Math.floor(Date.now() / 1000) + 5 //Test campaign lasts 5 seconds
         let instance = await BitCollect.deployed()
         var new_contract_addr = null;
 
@@ -114,7 +114,7 @@ contract("BitCollect Test", async accounts => {
         truffleAssert.eventEmitted(report_2, 'fraudReported', (ev) => {return ev.s == State["RUNNING"]})
 
         //Wait the end of the campaign
-        sleep.sleep(10)
+        sleep.sleep(5)
 
         //Beneficiaries withdraw
         let report_amount_plus = "50000000000000000" //reporter invesments divided by all beneficiaries 4000/2

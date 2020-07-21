@@ -53,10 +53,10 @@ contract("BitCollect Test", async accounts => {
 
         //Check users rewards
         let rewards_don1 = await campaign_instance.getDonationReward({from: accounts[5]})
-        assert.equal(rewards_don1[0].words[0], 0, "incorrect reward");
+        assert.equal(rewards_don1[0].toNumber(), 0, "incorrect reward");
         let rewards_don2 = await campaign_instance.getDonationReward({from: accounts[6]})
-        assert.equal(rewards_don2[0].words[0], 1, "incorrect reward");
-        assert.equal(rewards_don2[1].words[0], 0, "incorrect reward");
+        assert.equal(rewards_don2[0].toNumber(), 1, "incorrect reward");
+        assert.equal(rewards_don2[1].toNumber(), 0, "incorrect reward");
     });
   
 

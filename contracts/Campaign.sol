@@ -100,7 +100,7 @@ contract Campaign{
         require(_organizers.length>0, "Error: Need at least 1 organizer"); //RQ-PARAMS
         require(_beneficiaries.length>0, "Error: Need at least 1 beneficiary"); //RQ-PARAMS
         require(_end_date>block.timestamp, "Error: the provided campaign end date il is earlier than the start date");
-        
+
         for(uint i = 0; i < _organizers.length; i++) {
             organizers.push(_organizers[i]);
             organizers_donation[_organizers[i]] = false;
@@ -128,7 +128,7 @@ contract Campaign{
     function startCampaign(address[] calldata to, uint[] calldata wei_partition)
      campaignNotEnded() external payable isOrganizer() beneficiariesExist(to) requireState(State.PENDING){//RQ-PARAMS
 
-        require(organizers_donation[msg.sender]==true, "You have already made an initial donation to start the campaign");
+        require(organizers_donation[msg.sender]==false, "You have already made an initial donation to start the campaign");
 
         makeDonation(to, wei_partition); //The donors initial donations are managed as a simple donations
         organizers_donation[msg.sender] = true;
