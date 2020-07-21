@@ -5,7 +5,7 @@ var bodyParser = require("body-parser");
 var Mongo = require('./MongoDB');
 
 
-app.use(cors({origin: 'http://localhost:3000'}));
+app.use(cors({origin: '*'}));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 

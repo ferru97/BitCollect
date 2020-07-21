@@ -101,33 +101,39 @@
 							</p>
 						</div>
 						<div id="check" style="display: none;">
-							<p style="font-size: 13pt; color: black;"><br>During the creation of the campaign, some of the information are not saved on the blockchain for economical and ethical reasons.
-							Nevertheless, for this information a checksum is saved on the blockchain in order to provide reliability of information.
-							With this test, you can check if some of this information have been tampered since the creation of campaign
+							<p style="font-size: 13pt; color: black;"><br>During the creation of the campaign, some of the information is not saved on the blockchain for economical and ethical reasons. Nevertheless, 
+								for this information, a checksum is saved on the blockchain in order to provide the reliability of the information. With this test, you can check if some of this information has tampered since the creation of campaign
 							<table  class="table2">
+								<tr><th>Data</th><th>Status</th><th>Blockchain MD5</th></tr>
 								<tr>
 									<td>Campaign name</td>
 									<td id="ch_name"></td>
+									<td id="ch_name_md5"></td>
 								</tr>
 								<tr>
 									<td>Beneficiaries names</td>
 									<td id="ch_ben"></td>
+									<td id="ch_ben_md5"></td>
 								</tr>
 								<tr>
 									<td>Organizers names</td>
 									<td id="ch_org"></td>
+									<td id="ch_org_md5"></td>
 								</tr>
 								<tr>
 									<td>Campaign description</td>
 									<td id="ch_desc"></td>
+									<td id="ch_desc_md5"></td>
 								</tr>
 								<tr>
 									<td>Rewards name</td>
 									<td id="ch_rew"></td>
+									<td id="ch_rew_md5"></td>
 								</tr>
 								<tr>
 									<td>Image link</td>
 									<td id="ch_img"></td>
+									<td id="ch_img_md5"></td>
 								</tr>
 							</table>
 							</p>
@@ -144,8 +150,6 @@
 							<div id="donation_table"></div>
 							<br>
 							<button onclick="makeDonation()">DONATE</button><br>
-							<P id='em2'>*The email address is needed only for as a contact to manage unlockd rewards<br>
-							You can omit this field if you don't unlock any reward</P>
 						</div>
 					</div>
 				</div>
@@ -180,7 +184,7 @@
 	<div class="container">
 			<div class="row">
 				<!--This template has been created under the Creative Commons Attribution 3.0 License. Please keep the attribution link below when using this template in your own project, thank you.-->
-				<span class="copyright">Created by <a href="http://themes.audaindesigns.com" target="_blank">Audain Designs</a> for free use</span>
+				<span class="copyright">System developed by <a href="https://www.facebook.com/vito.l.ferrulli">Ferrulli Vito</a> - Website template by <a href="http://themes.audaindesigns.com" target="_blank">Audain Designs</a></span>
 			</div>
 		</div>
 	</footer>

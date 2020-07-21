@@ -30,33 +30,33 @@ contract("BitCollect Test", async accounts => {
 
         campaign_instance = await Campaign.at(new_contract_addr);
 
-        let org1_don = await campaign_instance.startCampaign([beneficiarir_1,beneficiarir_2],[1000,2000], "", {from: organizer_1, value:3000})
+        let org1_don = await campaign_instance.startCampaign([beneficiarir_1,beneficiarir_2],[1000,2000], {from: organizer_1, value:3000})
         truffleAssert.eventEmitted(org1_don, 'campainStatus', (ev) => {return ev.s == State["PENDING"]})
         truffleAssert.eventNotEmitted(org1_don, 'donationRewardUnlocked')
 
-        let org2_don = await campaign_instance.startCampaign([beneficiarir_1],[2000], "", {from: organizer_2, value:2000})
+        let org2_don = await campaign_instance.startCampaign([beneficiarir_1],[2000], {from: organizer_2, value:2000})
         truffleAssert.eventEmitted(org2_don, 'campainStatus', (ev) => {return ev.s == State["RUNNING"]})
         truffleAssert.eventNotEmitted(org2_don, 'donationRewardUnlocked')
 
         //Make a couple of donations
-        let donation_1 = await campaign_instance.makeDonation([beneficiarir_1],[4000], "acc5@test.com", {from: accounts[5], value:4000})
+        let donation_1 = await campaign_instance.makeDonation([beneficiarir_1],[4000], {from: accounts[5], value:4000})
         truffleAssert.eventEmitted(donation_1, 'donationSuccess')
         truffleAssert.eventEmitted(donation_1, 'donationRewardUnlocked')
 
-        let donation_2 = await campaign_instance.makeDonation([beneficiarir_1, beneficiarir_2],[3000, 4000], "acc6@test.com", {from: accounts[6], value:7000})
+        let donation_2 = await campaign_instance.makeDonation([beneficiarir_1, beneficiarir_2],[3000, 4000], {from: accounts[6], value:7000})
         truffleAssert.eventEmitted(donation_2, 'donationSuccess')
         truffleAssert.eventEmitted(donation_2, 'donationRewardUnlocked')
 
-        let donation_3 = await campaign_instance.makeDonation([beneficiarir_1],[4000], "acc5@test.com", {from: accounts[6], value:4000})
+        let donation_3 = await campaign_instance.makeDonation([beneficiarir_1],[4000], {from: accounts[6], value:4000})
         truffleAssert.eventEmitted(donation_3, 'donationSuccess')
         truffleAssert.eventEmitted(donation_3, 'donationRewardUnlocked')
 
         //Check users rewards
         let rewards_don1 = await campaign_instance.getDonationReward({from: accounts[5]})
-        assert.equal(rewards_don1[0].words[0], 0, "incorrect reward");
+        assert.equal(rewards_don1[0].toNumber(), 0, "incorrect reward");
         let rewards_don2 = await campaign_instance.getDonationReward({from: accounts[6]})
-        assert.equal(rewards_don2[0].words[0], 1, "incorrect reward");
-        assert.equal(rewards_don2[1].words[0], 0, "incorrect reward");
+        assert.equal(rewards_don2[0].toNumber(), 1, "incorrect reward");
+        assert.equal(rewards_don2[1].toNumber(), 0, "incorrect reward");
     });
   
 

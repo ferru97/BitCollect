@@ -10,7 +10,6 @@ library Library{
     struct DonationReward{
         uint max_reward_index;
         uint donation_index;
-        string email_contact;
     }
 
     struct Donation{

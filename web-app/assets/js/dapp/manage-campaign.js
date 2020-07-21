@@ -166,31 +166,37 @@ function infoChecksum(){
         $("#ch_name").html(good)
     else
         $("#ch_name").html(bad)
+    $("#ch_name_md5").html(md5s[0])
     
     if(CryptoJS.MD5(db_data.organizers_names.join()) == md5s[1])
         $("#ch_org").html(good)
     else
         $("#ch_org").html(bad)
+    $("#ch_org_md5").html(md5s[1])
 
     if(CryptoJS.MD5(db_data.bneficiaries_names.join()) == md5s[2])
         $("#ch_ben").html(good)
     else
         $("#ch_ben").html(bad)
+    $("#ch_ben_md5").html(md5s[2])
     
     if(CryptoJS.MD5(db_data.description) == md5s[3])
         $("#ch_desc").html(good)
     else
         $("#ch_desc").html(bad)
+    $("#ch_desc_md5").html(md5s[3])
 
     if(CryptoJS.MD5(db_data.rewards_name.join()) == md5s[4])
         $("#ch_rew").html(good)
     else
         $("#ch_rew").html(bad)
+    $("#ch_rew_md5").html(md5s[4])
 
     if(CryptoJS.MD5(db_data.image_link) == md5s[5])
         $("#ch_img").html(good)
     else
         $("#ch_img").html(bad)
+    $("#ch_img_md5").html(md5s[5])
 }
 
 
@@ -233,7 +239,7 @@ function createDonation(){
         table += "<tr><td>"+db_data.bneficiaries_names[i]+"</td><td><button onclick='alert(\""+blockchain_data.beneficiaries[i]+"\")'>ADDRESS</button></td><td>"+input+"</td></tr>"
     }
 
-    table += "</table><table class='table2'><tr><td id='em1'>E-mail address</td><td><input type='email' id='email'></td></tr></table>"
+    table += "</table>"
     $("#donation_table").html(table)
 
     if(blockchain_data.rewards_prices.length==0){
@@ -260,16 +266,6 @@ function makeDonation(){
     var total_donation = partition.reduce((a, b) => parseInt(a) + parseInt(b), 0)
     if(total_donation<=0)
         return;
-    
-    var email = ""
-    if(blockchain_data.rewards_prices.length > 0){
-        email = $("#email").val()
-        var min_rew_price = blockchain_data.rewards_prices[0]
-        if(total_donation >= min_rew_price && email.length==0){
-            alert("You can unlock a reward! Inser an email address in order to be contacted for the reward manadgement")
-            return
-        }
-    }
 
     var callback = function(tx){
         if(tx.logs[0].event == "donationSuccess" || tx.logs[1].event == "donationSuccess"){
@@ -284,9 +280,9 @@ function makeDonation(){
     }
     
     if(state_index==0)
-        App.startCampaign(campaign_address, beneficiary, partition, email, total_donation, callback)
+        App.startCampaign(campaign_address, beneficiary, partition, total_donation, callback)
     if(state_index==1)
-        App.makeDonation(campaign_address, beneficiary, partition, email, total_donation, callback)
+        App.makeDonation(campaign_address, beneficiary, partition, total_donation, callback)
 }
 
 

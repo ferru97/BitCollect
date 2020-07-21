@@ -47,18 +47,12 @@ contract Campaign{
     event fraudReported(State s);
 
     modifier isOrganizer() {
-        bool is_organizer = false;
-        for(uint i = 0; i<organizers.length && !is_organizer; i++){
-            if(organizers[i] == msg.sender)
-                is_organizer = true;
-        }
-
-        require(is_organizer, "Error: function reserved to organizers");
+        require(senderOrganizer(), "Error: function reserved to organizers");
         _;
     }
 
     modifier isBeneficiary(){
-        require(beneficiaries_map[msg.sender].flag==true, "Error: only beneficiaries can access the withdraw");
+        require(beneficiaries_map[msg.sender].flag==true, "Error: only beneficiaries can access this function");
         _;
     }
 
@@ -91,8 +85,21 @@ contract Campaign{
         _;
     }
 
+    function senderOrganizer() private view returns(bool){
+        bool is_organizer = false; //become true if the sender is an organizer
+        for(uint i = 0; i<organizers.length; i++){
+            if(organizers[i]==msg.sender)
+                is_organizer = true;
+        }
+        return is_organizer;
+    }
+
     constructor(address[] memory _organizers, address payable[] memory _beneficiaries, uint _end_date,
     uint[] memory _rewards_costs, uint _fraudThreshold, string memory _campaign_info_hashes, uint _report_investment) public {
+
+        require(_organizers.length>0, "Error: Need at least 1 organizer"); //RQ-PARAMS
+        require(_beneficiaries.length>0, "Error: Need at least 1 beneficiary"); //RQ-PARAMS
+        require(_end_date>block.timestamp, "Error: the provided campaign end date il is earlier than the start date");
 
         for(uint i = 0; i < _organizers.length; i++) {
             organizers.push(_organizers[i]);
@@ -118,13 +125,13 @@ contract Campaign{
         emit campainStatus(state);
     }
 
-    function startCampaign(address[] calldata to, uint[] calldata wei_partition, string calldata contact_email)
+    function startCampaign(address[] calldata to, uint[] calldata wei_partition)
      campaignNotEnded() external payable isOrganizer() beneficiariesExist(to) requireState(State.PENDING){//RQ-PARAMS
-        
-        makeDonation(to, wei_partition, contact_email);
 
-        if(organizers_donation[msg.sender] == false)
-            organizers_donation[msg.sender] = true;
+        require(organizers_donation[msg.sender]==false, "You have already made an initial donation to start the campaign");
+
+        makeDonation(to, wei_partition); //The donors initial donations are managed as a simple donations
+        organizers_donation[msg.sender] = true;
 
         uint organizers_donors = 0;
         for(uint i = 0; i<organizers.length; i++){
@@ -143,25 +150,18 @@ contract Campaign{
     }
 
 
-    function makeDonation(address[] memory to, uint[] memory wei_partition, string memory contact_email)public payable
+    function makeDonation(address[] memory to, uint[] memory wei_partition)public payable
      campaignNotEnded() beneficiariesExist(to){
-
-        bool is_organizer = false;
-        for(uint i = 0; i<organizers.length; i++){
-            if(organizers[i]==msg.sender)
-                is_organizer = true;
-        }
          
-        require(state==State.RUNNING || (state==State.PENDING && is_organizer && organizers_donation[msg.sender]==false),
-                "Error: The campaign is not started or you're not an organizer to start it");
+        require(state==State.RUNNING || (state==State.PENDING && senderOrganizer()),"Error: The campaign is not started or you're not an organizer to start it");
         require(msg.value>0, "Error: 0 wei provided");
-        require(to.length==wei_partition.length, "Error: destinators size is different from the wei's partition size");
+        require(to.length==wei_partition.length, "Error: number of beneficiaries is different from the number of wei partition");
         
         uint total_donation = 0;
         for(uint i = 0; i<wei_partition.length; i++){
             total_donation = total_donation.add(wei_partition[i]);
         }
-        require(msg.value==total_donation,"Error: Total povided weis are different from the provided weis partitions");
+        require(msg.value==total_donation,"Error: Total provided weis are different from the sum of the provided weis partitions");
         
 
         Library.Donation memory d;
@@ -180,7 +180,6 @@ contract Campaign{
 
             reward.max_reward_index = i - 1;
             reward.donation_index = donations[msg.sender].length - 1;
-            reward.email_contact = contact_email;
 
             donations_rewards[msg.sender].push(reward);
 
@@ -195,7 +194,7 @@ contract Campaign{
 
 
     function beneficiaryWithdraw() external isBeneficiary() campaignExpired(){
-        require(beneficiary_withdrawn[msg.sender]==false, "Error: already withdrawn");//Avoid reentrancy
+        require(beneficiary_withdrawn[msg.sender]==false, "Error: You have already been refunded");//Avoid reentrancy
 
         uint amount = beneficiaries_map[msg.sender].amount;
 
@@ -218,7 +217,7 @@ contract Campaign{
     }
 
 
-    function deactivateCampaign() public isOrganizer() requireState(State.EXPIRED){
+    function deactivateCampaign() external isOrganizer() requireState(State.EXPIRED){
         require(address(this).balance==0, "Error: Wait until all beneficiaries withdraw their reward");
         state = State.DEACTIVATED;
 
@@ -241,13 +240,13 @@ contract Campaign{
 
 
     function fraudWithdraw() external payable requireState(State.BLOCKED){
-        require(user_refunded[msg.sender]==false, "You have already been refunded");
+        require(user_refunded[msg.sender]==false, "Error: You have already been refunded");
 
         uint index = 0;
-        if (organizers_donation[msg.sender]==true) //If organizer do not consider the firt donation sice it is the inital
+        if (organizers_donation[msg.sender]==true) //If organizer do not consider the firt donation sice it is the inital. This donation will be subdivided to all the reporters
             index = 1;
 
-        require(donations[msg.sender].length>=index || fraud_reporters[msg.sender]==true,
+        require(donations[msg.sender].length>index || fraud_reporters[msg.sender]==true,
         "You have not made donations/report or you have already withdrawn");
 
         uint amount = 0;
@@ -258,13 +257,13 @@ contract Campaign{
         }
 
         uint plus = 0;
-        if(fraud_reporters[msg.sender]==true)//If the sender is a reporter
+        if(fraud_reporters[msg.sender]==true)//If the sender is a reporter, he will have an extra amount from the organizers initial donations
             plus = initial_donation_amount.div(reports_number).add(report_investment);
 
 
         user_refunded[msg.sender] = true; //to avoid reentrancy
         (bool success, ) = msg.sender.call.value(amount+plus)("");
-        require(success==true, "Error: Fraud refound transaction error");
+        require(success==true, "Error: Fraud refund transaction error");
 
         emit refoundEmitted(amount, plus);
 
