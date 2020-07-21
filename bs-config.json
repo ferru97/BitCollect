@@ -1,6 +1,7 @@
 {
+    "port": 80,
     "server": {
      "baseDir": ["./web-app", "./build/contracts", "./node_modules/truffle-contract"]
      }
-    }
+}
     
