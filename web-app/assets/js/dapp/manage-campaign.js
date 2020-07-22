@@ -427,6 +427,3 @@ function closeCampaign(){
     }
     App.closeCampaign(campaign_address, callback)
 }
-
-
-window.ethereum.on('accountsChanged', function (accounts) {location.reload()})

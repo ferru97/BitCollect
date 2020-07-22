@@ -189,3 +189,5 @@ App = {
         });
     },
 }
+
+window.ethereum.on('accountsChanged', function (accounts) {App.init();})
