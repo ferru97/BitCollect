@@ -81,7 +81,7 @@ contract("BitCollect Test", async accounts => {
 
     
 
-    it("2 Organizer 3 Beneficiaries: Campaign with rewards: Block fraudolent campaign", async () => {
+    it("2 Organizer 3 Beneficiaries: Block fraudolent campaign", async () => {
         var end_date = Math.floor(Date.now() / 1000) + 5 //Test campaign lasts 5 seconds
         let instance = await BitCollect.deployed()
         var new_contract_addr = null;

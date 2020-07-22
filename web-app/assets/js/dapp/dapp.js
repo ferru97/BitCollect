@@ -24,6 +24,7 @@ App = {
             App.web3Provider = new Web3.providers.HttpProvider(App.url); // <==
             web3 = new Web3(App.web3Provider);
         }
+        window.ethereum.on('accountsChanged', function (accounts) {location.reload()})
         return App.initContract();
     },
 
@@ -120,6 +121,7 @@ App = {
     startCampaign: function(campaign_addr, beneficiaries, partitions, val, callback){
         App.contracts["Campaign"].at(campaign_addr).then(async(instance) =>{
             try{
+                console.log(partitions)
                 var tx_donation = await instance.startCampaign(beneficiaries, partitions, {from: App.account, value:val});
                 callback(tx_donation);
             }catch(err){
@@ -132,6 +134,7 @@ App = {
     makeDonation: function(campaign_addr, beneficiaries, partitions, val, callback){
         App.contracts["Campaign"].at(campaign_addr).then(async(instance) =>{
             try{
+                console.log(partitions)
                 var tx_donation = await instance.makeDonation(beneficiaries, partitions, {from: App.account, value:val});
                 callback(tx_donation);
             }catch(err){
@@ -189,5 +192,3 @@ App = {
         });
     },
 }
-
-window.ethereum.on('accountsChanged', function (accounts) {App.init();})

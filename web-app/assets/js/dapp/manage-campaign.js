@@ -221,8 +221,11 @@ function beneficiariesInfo(){
 
 function createDonation(){
     var now = Math.floor(Date.now() / 1000)
-    if(blockchain_data.end_date.toNumber()<now)
+    if(blockchain_data.end_date.toNumber()<now){
+        alert("Campaign expired...")
         location.reload()
+    }
+        
 
     if(state_index==0 && blockchain_data.organizer_donated==true){
         alert("As organizer you have already donated to start this campaign. Wait the other organizers to start the campaign")

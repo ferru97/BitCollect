@@ -187,7 +187,7 @@ contract Campaign{
         }
 
         for(uint i = 0; i<to.length; i++)
-            beneficiaries_map[to[i]].amount += wei_partition[i];
+            beneficiaries_map[to[i]].amount = beneficiaries_map[to[i]].amount.add(wei_partition[i]);
 
         emit donationSuccess();
     }
