@@ -112,7 +112,7 @@ App = {
                 }
                 callback(info);
             }catch(err){
-                alert("Something went wrong ...")
+                alert("Something went wrong ... Try to reload the page")
                 console.log(err)
             }
         });
