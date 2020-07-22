@@ -7,7 +7,7 @@ The system is formed by the
 - **Smart contracts** implementing the logic of the system, located in the *contracts/* folder
 - **Web App** an interface to the blockchain using *Web3.js* that expose to the user all the supported functionalities. Located in the *web-app/* folder
 
-![](https://ibb.co/1rhVgT9)
+![system architecture](https://i.ibb.co/K2RZPW9/sys.png)
 
 ## Requirements
 The system requirements are the following:
