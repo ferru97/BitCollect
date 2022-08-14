@@ -7,7 +7,7 @@
     "test": "test"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^3.1.0",
+    "@openzeppelin/contracts": "^4.7.2",
     "@truffle/contract": "^4.2.12",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
